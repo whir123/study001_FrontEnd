@@ -32,7 +32,7 @@
 * 修改 `Property` 时 直接操作了`DOM对象`的实时状态 并非和`Attribute`同步（如例子中：更新了输入框中显示的值）
 ---
 ## HTML 和 XHTML
-* `HyperText Markup Language` 和 `Extension HyperText Markup Language`
+`HyperText Markup Language` 和 `Extension HyperText Markup Language`
 * 前者：基于SGML（Standard Generalized Markup Language）的标记语言 用于定义网页中的内容和结构 语法相对宽松 容错性高
 * HTML页面：通常使用 text/html 作为MIME类型
 * 后者：基于XML（Extension Markup
@@ -45,7 +45,14 @@
 * MIME 类型是一种用于描述互联网中传输的数据类型的标准。它最初是为电子邮件设计的，但现在广泛用于 HTTP 和其他协议中：`text/html 表示 HTML 文档` `image/png 表示 PNG 图像` `application/json 表示 JSON 数据`
 ---
 ## HTML 语义化
-总结为：`根据内容选择标签 用最恰当的标签来标记内容`
+总结为：`根据内容选择标签，用最恰当的标签来标记内容`
+- 语义化好处 :
+  - 使HTML结构变得清晰，有利于维护代码和添加样式
+  - 通常语义化HTML会使代码变的更少，使页面加载更快
+  - 即使在没有CSS样式的条件下，也能很好地呈现出内容结构、代码结构
+  - 便于团队开发和维护，语义化更具可读性，遵循W3C标准，可以减少差异化
+  - 方便其他设备解析（如屏幕阅读器、盲人阅读器、移动设备）以意义的方式来渲染网页
+  - 提升搜索引擎优化(SEO)的效果。和搜索引擎建立良好沟通，有助于爬虫抓取更多的有效信息，爬虫可以依赖于标签来确定上下文和各个关键字的权重
 ---
 ## iframe 与 frame 的区别
 二者都是用于在页面中`嵌套其他网页的HTML元素`
