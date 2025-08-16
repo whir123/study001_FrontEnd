@@ -96,3 +96,4 @@
   - `localStorage`用于持久化的本地存储，除非主动删除数据，否则数据是永远不会过期的
   - `SessionStorage`会在用户关闭浏览器后，即会话结束后，数据失效
   - `SessionStorage`与服务端`Session`无关
+---

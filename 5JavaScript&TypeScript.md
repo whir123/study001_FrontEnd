@@ -191,34 +191,61 @@ Object.hasOwn**
       Object.hasOwn(obj, "prop");
     ```
 ---
-
-## WeakMap
-JavaScript 中的一种特殊集合类型 它与普通的 Map 类似，但有以下几个关键区别：
-- 键必须是对象（不能是原始值）
-- 键是弱引用（不会阻止垃圾回收）
-  - 当WeakMap 中的键对象没有被其他地方引用时，它会被垃圾回收；相应的键值对会自动从 WeakMap 中消失；这使得 WeakMap 非常适合用来存储对象的元数据或私有数据
-- 不可枚举（没有方法能获取所有键或值）
-    ```js
-      const weakMap = new WeakMap();
-      const obj1 = {};
-      const obj2 = {};
-  
-      weakMap.set(obj1, 'value1');// 设置键值对
-      weakMap.set(obj2, 'value2');
-      console.log(weakMap.get(obj1)); // 获取值 // 'value1'
-      console.log(weakMap.has(obj1)); // 检查键是否存在 // true
-      weakMap.delete(obj1); // 删除键值对
-  
-      for (const key of map.keys()) {......} // 普通Map遍历方法
-      for (const val of map.values()) {......}
-      for (const [key, value] of map.entries()) {......} // entries 遍历键值对
-      map.forEach((value, key, map) => { // forEach 方法
-        console.log(key, value);
-      });
+## JavaScript 中的执行上下文和执行栈
+1. `执行上下文`是当前`JavaScript`代码被解析和执行`所在环境`的抽象概念 | 执行上下文共三种类型：
+   - **全局执行上下文**： 浏览器中的对象是`window对象 (或self/frames)` `this`指向这个全局对象 ｜ `this`默认绑定：严格模式下是 `undefined`，非严格模式是 `window / global`
+     - 跨平台统一写法：`globalThis`（ES2020 引入） → 在浏览器中等于 window，在 Node 中等于 global
+   - **函数执行上下文**：有无数个 函数被调用的时候创建 每次调用函数都会创建一个新的上下文
+   - **Eval函数执行上下文**： 运行在eval函数中的代码 很少 也不建议使用
+2. `执行栈（调用栈）` 具有`LIFO（先进后出）`结构 用于储存在代码执行期间创建的所有执行上下文：
+   - **首次运行**：创建一个`全局执行上下文` push 到当前`执行栈`
+   - **发生函数调用时**：引擎为当前函数创建 `新的函数执行上下文` push到`执行栈顶` 
+   - **函数运行完成后**： 对应的函数执行上下文从栈顶pop出 上下文控制权移交到当前执行栈的`下一个执行上下文`
+3. 执行上下文的创建：1创建阶段 | 2执行阶段
+   - 创建阶段： 确定`this`的值（ `This Binding` ） |  `LexicalEnvironment（词法环境）组件` 被创建 | `VariableEnvironment（变量环境）组件` 被创建
+   - 全局执行上下文中： `this`指向全局对象 浏览器中指向`window` ; `node.js`中指向这个文件的`module对象`
+   - 函数执行上下文中： `this`指向取决于`函数调用方式` 默认绑定｜隐式绑定｜显式绑定（硬绑定）｜new绑定｜箭头函数 ……
+---
+## 词法环境 和 变量环境
+- `词法环境 LE` 和 `变量环境 VE` 并列
+  - `LexicalEnvironment（词法环境 LE）` ：
+    - `let / const / class` 声明
+    - `函数声明`（函数声明提升在 LE 里，且优先级高于 var）
+    - 对外层环境的引用（形成作用域链）
+    - ( arguments 对象是什么 ) : 只在`非箭头函数`里可用的、`类数组的对象`，装着实参列表: (有length 按下标可取值 但不是数组 没有原生数组方法)
+      ```js
+        function f(a, b) {
+          console.log(arguments.length); // 实参个数
+          console.log(arguments[0], arguments[1]);
+        }
+        f(1, 2, 3);// 3 \n 1 2
+      ```
+  - `VariableEnvironment（变量环境 VE）` ：
+    - `var` 声明的绑定（初始化为 undefined）
+- 所以在函数声明与 var 冲突时，函数声明优先 : 
+  ```js
+    console.log(a); // [Function: a]
+    var a = 1;
+    function a() {}
     ```
+- 函数声明 vs 函数表达式:
+  ```js
+    // 函数声明提升：整体提升，可以在声明前调用。
+    // 函数表达式：只有变量声明提升，函数不会提升。
+    foo(); // declaration
+    function foo() { console.log("declaration"); }
+
+    bar(); // TypeError: bar is not a function
+    var bar = function() { console.log("expression"); };
+  ```
+- （为什么分两套）ES6 以后增加了 let/const 的块级作用域和 TDZ 语义，需要与 var 分开管理，避免老语义相互干扰
+---
+## 变量提升的原因 | 从词法环境和变量环境来看 
+- 创建阶段：函数声明存储在环境中 ｜ 而变量会被设置为 `undefined`（在`var`的情况下） ｜ 保持未初始化（在`let / const`的情况下）
+- 所以： 可以在声明之前访问 var 定义的变量（尽管是 `undefined` ） ｜ 但如果在声明之前访问 `let / const` 定义的变量就会提示引用错误 ｜ `TDZ，暂时性死区`
 ---
 ## JavaScript 和 TypeScript
-TS 是 JS 的超集：TS在JS的基础上加入了静态类型系统+其他高级特性：
+`TS 是 JS 的超集`：TS在JS的基础上加入了静态类型系统+其他高级特性：
 - 静态类型检查
 - 类、接口、泛型等面向对象特性
 - ES6+ 特性支持
@@ -267,7 +294,7 @@ TS的泛型：
 - `动态类型语言`：类型在运行时才确定 变量类型可随时改变
 - `静态类型语言`：类型在编译时确定 变量类型不可改变
 
-`python`：强类型+动态类型
+`Python`：强类型+动态类型
 ```python
   x = 10      # x 是整数（动态类型允许赋值）
   x = "hello" # x 变为字符串（动态类型的特性）
@@ -276,6 +303,31 @@ TS的泛型：
 `JS`：弱类型+动态类型  
 `TS`：强类型+静态类型
 
+---
+## WeakMap
+`JavaScript` 中的一种特殊集合类型 它与普通的 Map 类似，但有以下几个关键区别：
+- 键必须是对象（不能是原始值）
+- 键是弱引用（不会阻止垃圾回收）
+  - 当WeakMap 中的键对象没有被其他地方引用时，它会被垃圾回收；相应的键值对会自动从 WeakMap 中消失；这使得 WeakMap 非常适合用来存储对象的元数据或私有数据
+- 不可枚举（没有方法能获取所有键或值）
+    ```js
+      const weakMap = new WeakMap();
+      const obj1 = {};
+      const obj2 = {};
+  
+      weakMap.set(obj1, 'value1');// 设置键值对
+      weakMap.set(obj2, 'value2');
+      console.log(weakMap.get(obj1)); // 获取值 // 'value1'
+      console.log(weakMap.has(obj1)); // 检查键是否存在 // true
+      weakMap.delete(obj1); // 删除键值对
+  
+      for (const key of map.keys()) {......} // 普通Map遍历方法
+      for (const val of map.values()) {......}
+      for (const [key, value] of map.entries()) {......} // entries 遍历键值对
+      map.forEach((value, key, map) => { // forEach 方法
+        console.log(key, value);
+      });
+    ```
 ---
 ## var / const / let
 `var：` 
@@ -296,9 +348,48 @@ TS的泛型：
 - 在全局作用域`用let声明的变量`不会成为`window对象`的属性
 
 `const：` `ES6 块级作用域常量`
-- 作用域（Scope）: <u>块级</u> 同`let`
-- 变量提升（Hoisting）:进入“暂时性死区” 同`let`
+- 作用域（Scope）: 块级 同`let`
+- 变量提升（Hoisting）: 进入“暂时性死区” 同`let`
 - 不允许重复声明 同`let`
 - 不可变性（Immutability）: const声明的变量必须初始化，且不能重新赋值 `（但对象/数组的内容可修改）`
 - 在全局作用域`用const声明的变量`不会成为 window 对象的属性 同`let`
+---
+## 作用域链 vs 原型链
+`作用域链（Scope Chain）` :
+- 用来`变量查找` | 解决“变量在哪儿”
+- JS引擎在执行代码时 如果在当前`词法环境 LE`找不到某个变量 就会沿着外层环境一直往上查 直到全局环境
+
+`原型链` :
+- 用来属性/方法查找| 解决“对象属性在哪儿”
+- 对象访问某个属性时 现在自己身上找 找不到就去它的 `[[Prototype]]`(也就是 `__proto__`) 查找 层层查找直到 `Object.prototype`
+---
+## Function 与 Object
+`Object`是所有对象的基类；所有函数是`Function`对象的实例
+- **Object**
+  - `Object`是所有函数的最终基类
+  - 所有对象（包括函数、数组、日期等）最终继承自 `Object.prototype` （ 继承方法和属性 尽管它们可能会被覆盖 ）
+  - `Object.prototype`是原型链的终点 它的`__proto__`指向`null`
+- **Function**
+  - 所有的构造函数都是 `Function` 的实例; 包括用户自定义函数和内置构造函数（`Object`、`Array`、`Date`等）
+  - `Function` 构造函数本身也是一个函数 自己也是自己的实例
+  - `Function`作为构造函数 本质上是一个对象 因此继承自`Object.prototype`
+    ```
+      Object.prototype 原型链顶点
+                  ↑
+      Function.prototype 函数的原型
+                  ↑
+      Function 构造函数本身
+                  ↑
+      Object 构造函数 ｜ 也是一个函数
+    ```
+    - `Object.__proto__ === Function.prototype` ✅（因为 Object 本身是一个函数，由 Function 构造）
+    - `Function.__proto__ === Function.prototype` ✅（因为 Function 也是函数，它自己造自己）
+    - `Function.prototype.__proto__ === Object.prototype` ✅（函数原型最终还是继承自 Object）
+    - `Object.prototype.__proto__` === null ✅（顶点）
+- **`.prototype` 和 `__proto__` 的区别**
+  - `prototype`是构造函数特有的属性
+  - `new` 调用构造函数时 创建的新对象的`__proto__`会指向该构造函数的`prototype`
+  - `__proto__`是对象所具有的内部属性 指向该对象的原型（构造函数的`prototype`）
+  - 现代浏览器通常可直接访问 规范中叫`[[Prototype]]`
+- [一些范例](./5JavaScript&TypeScript/1-Object.js)
 ---

@@ -75,4 +75,4 @@
 - 通过限制网页可以加载的资源类型、来源以及执行的脚本，来提高 Web 应用的安全性: CSP 可以控制：`脚本（script-src）``样式（style-src）``图片（img-src）``字体（font-src）``媒体（media-src）``连接（connect-src）``iframe 对象``表单提交`等
 - 通过 `HTTP` 响应头（`Content-Security-Policy`）或 `HTML 元标签（<meta>）`来配置 (`HTTP 响应头`优先于 `<meta> 标签`)
 ---
-
+## 对浏览器内核的理解
