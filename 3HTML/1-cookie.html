@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form>
+        <label style="display: block;">用户名</label>
+        <input style="display: block;" type="username">
+        <label style="display: block;">密码</label>
+        <input style="display: block;" type="password">
+        <input style="display: block;" type="checkbox" id="rememberMe">
+        <label style="display: block;" for="rememberMe">记住我</label>
+        <input style="display: block;" type="submit" value="登录">
+        <!-- label：隐式关联（包裹式）
+        显式关联（使用 for 属性） -->
+    </form>
+
+    <script>
+        const username = document.querySelector('input[type="username"]');
+        const checkbox = document.querySelector('input[type="checkbox"]');
+        const submit = document.querySelector('input[type="submit"]');
+
+        submit.addEventListener('click', e => {
+            if(checkbox.checked && username.value != ''){
+                let key = 'username';
+                let value = encodeURIComponent(username.value);
+                let twoDays = 2*24*60*60;
+                document.cookie = `${key}=${value};max-age=${twoDays}`;
+            };
+            e.preventDefault();
+            // 阻止元素的默认行为
+            // 在表单提交场景中，它会阻止表单的默认提交动作（即阻止页面刷新或跳转）
+        })
+    </script>
+</body>
+</html>

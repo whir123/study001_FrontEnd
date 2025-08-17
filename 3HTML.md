@@ -88,12 +88,22 @@
 * 修改 `Property` 时 直接操作了`DOM对象`的实时状态 并非和`Attribute`同步（如例子中：更新了输入框中显示的值）
 ---
 ## localStorage 与 sessionStorage
-`localStorage`和`sessionStorage`是`HTML5`提供的对于`Web存储`的解决方案 | 这二者均与HTTP无关 是HTML5提供的标准 所以：
-- 发起`HTTP请求`时不像`cookie`一样自动携带
-- 键值对形式存储 以`String`形式存储 | 存储时调用`toString()`转换为`String类型`
+`localStorage`和`sessionStorage`是`HTML5`提供的对于`Web存储`的解决方案（`HTML5` 标准的 `Web Storage API`） | 这二者均与HTTP无关 是HTML5提供的标准 所以：
+- 发起`HTTP请求`时不像`cookie`一样自动携带 | 完全在浏览器端 适合纯前端逻辑数据存储
+- 数据以 `key-value`（字符串） 形式存储，存进去时会被隐式转换成 `string`
 - 每个域容量不一样 大约5M
 - 不同点：
   - `localStorage`用于持久化的本地存储，除非主动删除数据，否则数据是永远不会过期的
   - `SessionStorage`会在用户关闭浏览器后，即会话结束后，数据失效
   - `SessionStorage`与服务端`Session`无关
+- Cookie 与它们的联系：
+  - Cookie 是 HTTP 协议的状态管理机制，最初是为了让无状态的 HTTP 记住客户端信息
+  - 但是浏览器提供了 `JS API` 来操作 `Cookie` :
+    ```
+    document.cookie = "username=xxx; max-age=3600";
+    ```
+  - `JS` 设置的 `Cookie` 默认就是客户端自己能读/写的（除非服务端设置了 `HttpOnly` 标记 → 前端不可读）
+  - 服务端设置的 `Cookie` 常用于认证（比如 `Set-Cookie: session_id=xxx; HttpOnly; Secure`），浏览器会在后续请求里自动带上
+  - [记住用户名的登录表单 + Cookie](./3HTML/1-cookie.html)
+  - [搜索历史记录 + LocalStorage](./3HTML/2-localStorage.html)
 ---

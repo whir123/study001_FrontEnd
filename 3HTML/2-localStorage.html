@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="text">
+    <section>
+        <ul class="history"></ul>
+    </section>
+    <button>搜索</button>
+
+    <script>
+        const input = document.querySelector('input[type="text"]');
+        const button = document.querySelector('button');
+        const history = document.querySelector('.history');
+
+        // 加载已有历史记录
+        function loadHistory() {
+            history.innerHTML = '';
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+
+                let li = document.createElement('li');
+                li.textContent = value;
+
+                let close = document.createElement('span');
+                close.textContent = ' ×';
+                close.classList.add('delete-btn');
+
+                li.appendChild(close);
+                history.appendChild(li);
+
+                close.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    localStorage.removeItem(key);
+                    li.remove();
+                });
+            }
+        };
+
+        //初始化加载
+        loadHistory();
+
+        button.addEventListener('click', () => {
+            if (input.value) {
+                let key = new Date().valueOf();
+                // new Date() 创建一个表示当前时间的 Date 对象
+                // .valueOf() 方法返回该日期对象的原始值（时间戳）
+                let value = input.value;
+                localStorage.setItem(key, value);
+                input.value = '';
+                loadHistory(); // 刷新显示
+                // let li = document.createElement('li');
+                // let liText = document.createTextNode(localStorage.getItem(key));
+                // li.appendChild(liText);
+                // history.appendChild(li);
+
+                // let close = document.createElement('span');
+                // li.appendChild(close);
+                // close.addEventListener('click', () => {
+                //     localStorage.removeItem(key);
+                //     li.remove(); // 更现代的删除方式
+                //     // li.parentNode.removeChild(li);
+                //     // 在大多数情况下，parentNode 和 parentElement 返回相同的值
+                //     // 对于普通元素节点，两者都返回其父元素，都可以用于DOM操作
+                //     // 1当父节点可能是非元素节点 2处理文档节点时 必须parentNode
+                // });
+            }
+        });
+    </script>
+</body>
+
+</html>
