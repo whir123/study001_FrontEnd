@@ -391,5 +391,5 @@ TS的泛型：
   - `new` 调用构造函数时 创建的新对象的`__proto__`会指向该构造函数的`prototype`
   - `__proto__`是对象所具有的内部属性 指向该对象的原型（构造函数的`prototype`）
   - 现代浏览器通常可直接访问 规范中叫`[[Prototype]]`
-- [一些范例](./5JavaScript&TypeScript/1-Object.js)
+- [一些原型链范例](./5JavaScript&TypeScript/Object.js)
 ---

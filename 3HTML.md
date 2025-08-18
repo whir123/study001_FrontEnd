@@ -104,6 +104,6 @@
     ```
   - `JS` 设置的 `Cookie` 默认就是客户端自己能读/写的（除非服务端设置了 `HttpOnly` 标记 → 前端不可读）
   - 服务端设置的 `Cookie` 常用于认证（比如 `Set-Cookie: session_id=xxx; HttpOnly; Secure`），浏览器会在后续请求里自动带上
-  - [记住用户名的登录表单 + Cookie](./3HTML/1-cookie.html)
-  - [搜索历史记录 + LocalStorage](./3HTML/2-localStorage.html)
+  - [记住用户名的登录表单 + Cookie](./3HTML/cookie.html)
+  - [搜索历史记录 + LocalStorage](./3HTML/localStorage.html)
 ---
