@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .AA {
+            width: 500px;
+            height: 500px; 
+            border: black solid 2px;
+            gap: 20px;
+            margin-top: 80px;
+        }
+
+        .aa, .bb, .cc {
+            width: 50px;
+            height: 50px;
+        }
+
+        .aa {
+            position: relative;
+            left: 20px;
+        }
+        .bb {
+            position: absolute;
+            top: 0;
+            left: 40px;
+        }
+        /* bb父元素没有设置position非默认的 */
+        /* 相对视口定位 脱离文档流 */
+    </style>
+</head>
+<body>
+    <div class="AA">
+        <div class="aa" style="background-color: brown;"></div>
+        <div class="bb" style="background-color: blue;"></div>
+        <div class="cc" style="background-color: forestgreen;"></div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="parent1">
+        <div style="background-color: brown;" class="child1"></div>
+        <div style="background-color: darkgray;" class="child2"></div>
+        <div style="background-color: darkcyan;" class="child3"></div>
+    </div>
+    <div class="parent2">
+        <div style="background-color: brown;" class="child4"></div>
+        <div style="background-color: darkgray;" class="child5"></div>
+        <div style="background-color: darkcyan;" class="child6"></div>
+    </div>
+</body>
+
+<style>
+    .parent1 {
+        border: black solid 2px;
+        /* height: 500px; */
+        /* width: 500px; */
+    }
+
+    .child1, .child2, .child3 {
+        height: 100px;
+        width: 100px;
+        float: left;
+        /* ⚠️ 浮动后 父元素塌陷 */
+    }
+
+    .parent2 {
+        /* ⚠️ 跟在 child3 后面 */
+        border: black solid 2px;
+        /* height: 500px; */
+        /* width: 500px; */
+
+        /* overflow: hidden; */ /* 或者 auto */
+        display: flow-root;
+        /* ⚠️ 父元素触发 BFC 清除浮动 */
+    }
+
+    .child4, .child5, .child6 {
+        height: 100px;
+        width: 100px;
+        float: right;
+        /* 浮动后 父元素塌陷 */
+    }
+
+    /* ⚠️ 生成一个看不见的块级伪元素，并清除浮动，撑起父元素高度 */
+    /* .parent2::after { */
+        /* content: ""; */
+        /* display: block; */
+        /* clear: both; */
+        /* ⚠️ 强制这个伪元素不允许和前面的浮动元素并排，而是“换到浮动元素的下面” */
+    /* } */
+    
+</style>
+</html>

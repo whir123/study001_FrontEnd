@@ -92,21 +92,52 @@
   - `CSS`文件的`<link>`属性 | `rel` 表示链接的关系，rel="stylesheet" 表示加载外部样式表 | `href`	指定样式表文件的路径
   - `JS`文件的`<script>`属性 | `src` 指定 JavaScript 文件的路径 | `defer` 脚本会延迟执行 直到 HTML 文档完全解析后再运行 保证顺序执行 | `async` 脚本会异步加载并执行 加载顺序不一定与 HTML 顺序一致（可能无序）
 ---
+## 选择器 & 优先级
+1. 内联选择器 ｜ 1000 ｜ 
+2. id选择器 ｜ 100 ｜ #id
+3. 类选择器 ｜ 10 ｜ .class
+4. 属性选择器 ｜ 10 ｜ a[ref="link"]
+5. 伪类选择器 ｜ 10 ｜ li:last-child
+6. 标签选择器 ｜ 1 ｜ div
+* ————
+1. 兄弟选择器 ｜ 0 ｜ div+p
+2. 子选择器 ｜ 0 ｜ ul>li
+3. 后代选择器 ｜ 0 ｜ li a
+* ————
+1.  通配符 ｜ 0 ｜ *
+---
+## 长度单位
+- **绝对单位**：不随环境改变 固定不变
+  - `px` ｜ 受屏幕dpi影响
+  - `cm/mm/in` ｜ 
+  - `pt` ｜ 点 ｜ 1pt = 1/72in = 1.333px
+  - `pc` ｜ 派卡 ｜ 1pc = 12pt
+- **相对单位**：根据父元素、根元素或视口大小计算的，更灵活，响应式开发常用
+  - `em` ｜ 相对于父元素字体大小 ｜ 1em = 当前元素继承到的 font-size
+  - `rem` ｜ 相对于根元素字体大小 ｜ 一般 16px
+  - `ex` ｜ 相对于字体x高度（小写x）
+  - `ch` ｜ 相对于字体0宽度
+  - `vw/vh` ｜ 视口宽度/高度百分比
+  - `vmin/vmax` ｜ vw vh 的较小值/较大值 ｜ 自适应缩放
+  - `%` ｜ 相对于父元素的
+  - `lh` ｜ 相对于父元素的 line-height
+  - `rlh` ｜ 相对于根元素的 line-height
+---
 ## CSS 隐藏元素方法
 1. **`display: none`**
 - 被隐藏的元素不占据任何空间 产生的效果像元素完全不存在
 - 用户交互事件无法生效（点击事件等）
 - 但在DOM中可以访问到这个元素 也可以通过DOM操作它
-2. **`opacity: 0`**
+1. **`opacity: 0`**
 - 可见度设置0 完全透明
 - 只能从视角效果上隐藏元素 本身依然占据位置并对网页的布局起作用
 - 可以响应用户交互（点击事件等）
 - 添加过度属性可以显示动画效果
-3. **`visibility: hidden`**
+1. **`visibility: hidden`**
 - 元素会隐藏 但也会占据着自己的位置 并对网页的布局起作用，
 - 与opacity不同：它不会响应任何用户交互 元素在读屏软件中也会被隐藏，
 - 如果对于子元素：visibility: visible 子元素依旧可以显示而父元素会被隐藏
-4. **`overflow: hidden + position/height`**
+1. **`overflow: hidden + position/height`**
 - 把元素移出视觉区域 超出显示的部分隐藏掉
 ---
 ## display
@@ -140,14 +171,20 @@
 ## Float 浮动
 - `文档流`：盒子元素 排版布局过程中 ｜ 自动从左往右 从上往下 流式排布
 - `文本流`：文字元素 排版布局过程中 ｜ 自动从左往右 从上往下 流式排布
-- `float`属性会使元素浮动，使元素向左或向右移动，直到它的外边缘碰到`包含框`或`另一个浮动框`为止
+- `float`属性会使元素浮动，使元素向左或向右移动，直到它的外边缘碰到`包含框`或`另一个浮动框`为止 ｜ `float` 意味着使用块布局，它在某些情况下会修改 `display` 值的计算值
 - 浮动元素会脱离文档流但不会脱离文本流，当浮动时其不会影响周围的盒子模型，但是文字会环绕在浮动元素周围 | 可以认为: 文档流与文字流是分层结构 浮动元素盒子与文字元素处于同一层
 - 【脱离文档流，也就是将元素从普通的布局排版中拿走，其他盒子在定位的时候，会当做其不存在而进行定位】
 - **基本规则：**
-  - 元素设置 float:left/right 后，不再占据原本的块级位置（脱离常规流），但仍影响行框（文字绕排）
-  - 浮动元素的宽度若未指定，会进行 shrink-to-fit（收缩适配）
+  - 元素设置 `float:left/right` 后，不再占据原本的块级位置（脱离常规流），但仍影响行框（文字绕排）
+  - 浮动元素的宽度若未指定，会进行 `shrink-to-fit`（收缩适配）
+    ```html
+      <div style="float:left; background:lightblue;">hello world</div>
+      <!-- 没设置width 计算它的内容宽度 收缩到刚好包裹住内容 -->
+    ```
   - 父元素若只包含浮动子元素，高度会塌陷（因为浮动不在常规流）
-  - clear 可以让后续元素“避开”浮动的一侧或两侧：clear:left/right/both
+  - `clear` 可以让后续元素“避开”浮动的一侧或两侧：`clear:left/right/both`
+    - `clear` 属性指定一个元素是否必须移动 (清除浮动后) 到在它之前的浮动元素下面 | `clear` 属性适用于浮动和非浮动元素
+  - [浮动与清除浮动的尝试](./4CSS/float.html)
 ---
 ## BFC 块级格式化上下文
 `BFC`：`Block Formatting Context` 页面的一个独立布局环境 ｜ 在这个环境里的块级盒子排版不受外部影响，也不会影响外部的块级排版（尤其是与浮动、外边距折叠相关的行为）
@@ -212,6 +249,49 @@
   - [圣杯布局](./4CSS/flex-圣杯布局.html)
 ---
 ## Grid 布局
-
+强大的布局方案 尤其适合二维布局 ｜ 行 + 列同时控制 ｜ 把一个容器划分成行和列，子元素（item）可以被精确地放到某个格子里，也可以跨行/跨列
+- **容器上的属性：**
+- 定义行列
+  - `grid-template-rows` : 100px 200px 100px; | 三行
+  - `grid-template-columns` : 1fr 2fr / repeat(3, 1fr) ; 比例单位分
+- 自动行列
+  - `grid-auto-rows`: 100px; 未定义的行默认高度（网格项超出时 按需自动生成的行/列）
+  - `grid-auto-columns`: 50px; 未定义的列默认宽度
+- 间距
+  - `gap`: 10px;        行列间都有间距
+  - `row-gap`: 20px;    行间距
+  - `column-gap`: 30px; 列间距
+- 对其方式
+  - 整个网格在容器中的对齐
+  - `justify-content`: center; 水平方向对齐
+  - `align-content`: center;   垂直方向对齐
+  - 单元格内 item 的对齐：
+  - `justify-items`: center; 水平方向对齐
+  - `align-items`: center;   垂直方向对齐
+- **子元素属性：**
+- 跨行/跨列
+- grid-column: 1/3; | 第1列跨到第3列
+- grid-row: span 3; | 跨3行
+- `grid-area` 等价于：`grid-row-start / grid-column-start / grid-row-end / grid-column-end`
+    ```css
+      .itemA{ grid-area: 1 / 2 / 3 / 4; }
+      <!-- 轨道有 N 个 就有 N+1 条线 结束线是开区间 -->
+      <!-- grid-row-start: 1   从行线1开始 -->
+      <!-- grid-column-start: 2  从列线2开始 -->
+      <!-- grid-row-end: 3  直到行线3结束（不包含 3 之后）-->
+      <!-- grid-column-end: 4  直到列线4结束 -->
+    ```
 ---
 ## Position 定位
+`position` 属性用于指定一个元素在文档中的**定位方式** ｜ `top`、`right`、`bottom`、`left` 物理属性 + `inset-block-start`、`inset-block-end`、`inset-inline-start`、`inset-inline-end` 流相对逻辑属性则可用于决定定位元素的**最终位置**
+1. **`static`** -- 默认值 正常布局行为 【不脱离文档流】
+2. **`relative`** -- 【不脱离文档流】仍占位 ｜ 正常位置下 根据 `top` `bottom` `left` `right` 的值（offset = 偏移量）进行偏移 不影响任何其他元素的位置
+     - `z-index` 不是 `auto` 该值会创建一个`新的层叠上下文`
+3. **`absolute`** -- 【脱离文档流 也不参与文本流】 页面布局不留其空间 ｜ 参照物：最近的“已定位”（position!=static）祖先的内边距框（`padding box`），无则相对初始包含块（通常是`视口/根元素<html>`）| 最终位置由 `top...` 值决定
+     - `z-index` 不是 `auto` 该值会创建一个`新的层叠上下文`
+4. **`fixed`** -- 【脱离文档流 也不参与文本流】 页面布局不留其空间 ｜ 参照物：`视口`（如果祖先有 `transform/perspective/filter` 等 它们为视口替代） ｜ 最终位置由 `top...` 值决定
+     - 总会创建一个新的层叠上下文 ｜ 在打印的文档中，该元素在每一页上的位置都是相同的（永远固定在视口）
+5. **`sticky`** -- 【是否脱离文档流：否/是（阈值前像 `relative` ｜ 超过阈值时就“吸附”在视口 像 `fixed`）】 ｜ 参照物：最近的可滚动祖先（`overflow 非 visible`） ｜ 最终位置由 `top...` 定位
+     - 总是创建一个新的层叠上下文
+  - [relative + absolute 示例](./4CSS/position1.html)
+  - [fixed + sticky 示例](./4CSS/position2.html)
