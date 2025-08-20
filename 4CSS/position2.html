@@ -6,8 +6,8 @@
     <title>Document</title>
     <style>
         .outer {
-            width: 200px;
-            height: 300px;
+            width: 100px;
+            height: 1000px;
             border: black solid 2px;
             margin-top: 30px;
             background-color: azure;
@@ -15,25 +15,25 @@
         }
 
         .one {
-            /* ⚠️ fixed */
-            background-color: cadetblue;
-            position: fixed;
-            top: 40px;
-            left: 40px;
-        }
-
-        .two {
             /* ⚠️ sticky */
             background-color: blueviolet;
             position: sticky;
             top: 0px;
             left: 40px;
         }
+
+        .two {
+            /* ⚠️ fixed */
+            background-color: cadetblue;
+            position: fixed;
+            top: 40px;
+            left: 40px;
+        }
     </style>
 </head>
 <body>
     <div class="outer">
-        <div class="two">I am Sticky</div>
+        <div class="one">I am Sticky</div>
         <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam congue tortor
             eget pulvinar lobortis. Vestibulum ante ipsum primis in faucibus orci luctus
@@ -60,7 +60,7 @@
             finibus lectus nec ante congue rutrum. Curabitur quam quam, accumsan id
             ultrices ultrices, tempor et tellus.
         </p>
-        <div class="one">One</div>
+        <div class="two">Two</div>
     </div>
 </body>
 </html>

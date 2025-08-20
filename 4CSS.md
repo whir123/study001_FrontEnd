@@ -128,16 +128,16 @@
 - 被隐藏的元素不占据任何空间 产生的效果像元素完全不存在
 - 用户交互事件无法生效（点击事件等）
 - 但在DOM中可以访问到这个元素 也可以通过DOM操作它
-1. **`opacity: 0`**
+2. **`visibility: hidden`**
+- 元素会隐藏 但也会占据着自己的位置 并对网页的布局起作用
+- 用户交互事件无法生效（点击事件等）在读屏软件中会隐藏
+- 如果对于子元素：visibility: visible 子元素依旧可以显示而父元素会被隐藏
+3. **`opacity: 0`**
 - 可见度设置0 完全透明
 - 只能从视角效果上隐藏元素 本身依然占据位置并对网页的布局起作用
 - 可以响应用户交互（点击事件等）
 - 添加过度属性可以显示动画效果
-1. **`visibility: hidden`**
-- 元素会隐藏 但也会占据着自己的位置 并对网页的布局起作用，
-- 与opacity不同：它不会响应任何用户交互 元素在读屏软件中也会被隐藏，
-- 如果对于子元素：visibility: visible 子元素依旧可以显示而父元素会被隐藏
-1. **`overflow: hidden + position/height`**
+4. **`overflow: hidden + position/height`**
 - 把元素移出视觉区域 超出显示的部分隐藏掉
 ---
 ## display
@@ -250,19 +250,24 @@
 ---
 ## Grid 布局
 强大的布局方案 尤其适合二维布局 ｜ 行 + 列同时控制 ｜ 把一个容器划分成行和列，子元素（item）可以被精确地放到某个格子里，也可以跨行/跨列
+1. Grid容器：`display: grid;`
+2. Grid Items 网格项：直接子元素是网格项（可以指定大小位置来布局）
+3. Grid Lines 网格线：网格的分割线 水平+垂直 定义网格项的起始和结束位置
+4. Grid Cells 网格单元：网格线之间的区域 网格项可以占据的最小单位
+5. Grid Areas 网格区域：网格单元组成的矩形区域
 - **容器上的属性：**
-- 定义行列
+- 定义网格
   - `grid-template-rows` : 100px 200px 100px; | 三行
   - `grid-template-columns` : 1fr 2fr / repeat(3, 1fr) ; 比例单位分
-- 自动行列
+- 自动布局
   - `grid-auto-rows`: 100px; 未定义的行默认高度（网格项超出时 按需自动生成的行/列）
   - `grid-auto-columns`: 50px; 未定义的列默认宽度
-- 间距
+- 网格间距
   - `gap`: 10px;        行列间都有间距
   - `row-gap`: 20px;    行间距
   - `column-gap`: 30px; 列间距
 - 对其方式
-  - 整个网格在容器中的对齐
+  - 整个网格本身在容器中的对齐
   - `justify-content`: center; 水平方向对齐
   - `align-content`: center;   垂直方向对齐
   - 单元格内 item 的对齐：
@@ -270,17 +275,19 @@
   - `align-items`: center;   垂直方向对齐
 - **子元素属性：**
 - 跨行/跨列
-- grid-column: 1/3; | 第1列跨到第3列
-- grid-row: span 3; | 跨3行
+- `grid-column`: 1/3; | 第1列～第2列（不包括第3列）
+- `grid-row`: span 3; | 跨3行
 - `grid-area` 等价于：`grid-row-start / grid-column-start / grid-row-end / grid-column-end`
     ```css
       .itemA{ grid-area: 1 / 2 / 3 / 4; }
       <!-- 轨道有 N 个 就有 N+1 条线 结束线是开区间 -->
-      <!-- grid-row-start: 1   从行线1开始 -->
-      <!-- grid-column-start: 2  从列线2开始 -->
-      <!-- grid-row-end: 3  直到行线3结束（不包含 3 之后）-->
-      <!-- grid-column-end: 4  直到列线4结束 -->
+      <!-- grid-row-start: 1   从第1行开始 -->
+      <!-- grid-column-start: 2  从第2列开始 -->
+      <!-- grid-row-end: 3  第3行结束（不包含3）-->
+      <!-- grid-column-end: 4  第4列结束 -->
     ```
+- [Grid示例1 网格划分与合并](./4CSS/grid1.html)
+- [Grid示例2 grid-area等](./4CSS/grid2.html)
 ---
 ## Position 定位
 `position` 属性用于指定一个元素在文档中的**定位方式** ｜ `top`、`right`、`bottom`、`left` 物理属性 + `inset-block-start`、`inset-block-end`、`inset-inline-start`、`inset-inline-end` 流相对逻辑属性则可用于决定定位元素的**最终位置**
@@ -295,3 +302,4 @@
      - 总是创建一个新的层叠上下文
   - [relative + absolute 示例](./4CSS/position1.html)
   - [fixed + sticky 示例](./4CSS/position2.html)
+---

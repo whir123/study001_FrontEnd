@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="outer">
+        <div class="aa" style="background-color: brown;">aa</div>
+        <div class="bb" style="background-color: blue;">bb</div>
+        <div class="cc" style="background-color: forestgreen;">cc</div>
+        <div class="dd" style="background-color: salmon;">dd</div>
+        <div class="ee" style="background-color: navajowhite;">ee</div>
+    </div>
+</body>
+
+<style>
+    .outer {
+        display: grid;
+        grid-template-columns: 100px 200px 100px;
+        grid-template-rows: 1fr 1fr 2fr 1fr 1fr;
+        grid-auto-columns: 50px;
+        justify-items: center;
+        align-items: center;
+        border: black solid 2px;
+    }
+    /* F12去看网格划分情况 */
+
+    .aa, .bb, .cc, .dd, .ee {
+        width: 30px;
+        height: 30px;
+    }
+
+    .aa {
+        grid-row: span 3; /* ⚠️ 占3行 第1列的 */
+    }
+
+    .bb {
+        /* grid-column: 1/3; ⚠️ 占1-2列 第1列123行被占了 所以会从第4行开始 */
+        grid-column: 2/4; /* ⚠️ 占2-3列 从第1行开始*/
+    }
+</style>
+</html>

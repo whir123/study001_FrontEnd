@@ -191,59 +191,6 @@ Object.hasOwn**
       Object.hasOwn(obj, "prop");
     ```
 ---
-## JavaScript 中的执行上下文和执行栈
-1. `执行上下文`是当前`JavaScript`代码被解析和执行`所在环境`的抽象概念 | 执行上下文共三种类型：
-   - **全局执行上下文**： 浏览器中的对象是`window对象 (或self/frames)` `this`指向这个全局对象 ｜ `this`默认绑定：严格模式下是 `undefined`，非严格模式是 `window / global`
-     - 跨平台统一写法：`globalThis`（ES2020 引入） → 在浏览器中等于 window，在 Node 中等于 global
-   - **函数执行上下文**：有无数个 函数被调用的时候创建 每次调用函数都会创建一个新的上下文
-   - **Eval函数执行上下文**： 运行在eval函数中的代码 很少 也不建议使用
-2. `执行栈（调用栈）` 具有`LIFO（先进后出）`结构 用于储存在代码执行期间创建的所有执行上下文：
-   - **首次运行**：创建一个`全局执行上下文` push 到当前`执行栈`
-   - **发生函数调用时**：引擎为当前函数创建 `新的函数执行上下文` push到`执行栈顶` 
-   - **函数运行完成后**： 对应的函数执行上下文从栈顶pop出 上下文控制权移交到当前执行栈的`下一个执行上下文`
-3. 执行上下文的创建：1创建阶段 | 2执行阶段
-   - 创建阶段： 确定`this`的值（ `This Binding` ） |  `LexicalEnvironment（词法环境）组件` 被创建 | `VariableEnvironment（变量环境）组件` 被创建
-   - 全局执行上下文中： `this`指向全局对象 浏览器中指向`window` ; `node.js`中指向这个文件的`module对象`
-   - 函数执行上下文中： `this`指向取决于`函数调用方式` 默认绑定｜隐式绑定｜显式绑定（硬绑定）｜new绑定｜箭头函数 ……
----
-## 词法环境 和 变量环境
-- `词法环境 LE` 和 `变量环境 VE` 并列
-  - `LexicalEnvironment（词法环境 LE）` ：
-    - `let / const / class` 声明
-    - `函数声明`（函数声明提升在 LE 里，且优先级高于 var）
-    - 对外层环境的引用（形成作用域链）
-    - ( arguments 对象是什么 ) : 只在`非箭头函数`里可用的、`类数组的对象`，装着实参列表: (有length 按下标可取值 但不是数组 没有原生数组方法)
-      ```js
-        function f(a, b) {
-          console.log(arguments.length); // 实参个数
-          console.log(arguments[0], arguments[1]);
-        }
-        f(1, 2, 3);// 3 \n 1 2
-      ```
-  - `VariableEnvironment（变量环境 VE）` ：
-    - `var` 声明的绑定（初始化为 undefined）
-- 所以在函数声明与 var 冲突时，函数声明优先 : 
-  ```js
-    console.log(a); // [Function: a]
-    var a = 1;
-    function a() {}
-    ```
-- 函数声明 vs 函数表达式:
-  ```js
-    // 函数声明提升：整体提升，可以在声明前调用。
-    // 函数表达式：只有变量声明提升，函数不会提升。
-    foo(); // declaration
-    function foo() { console.log("declaration"); }
-
-    bar(); // TypeError: bar is not a function
-    var bar = function() { console.log("expression"); };
-  ```
-- （为什么分两套）ES6 以后增加了 let/const 的块级作用域和 TDZ 语义，需要与 var 分开管理，避免老语义相互干扰
----
-## 变量提升的原因 | 从词法环境和变量环境来看 
-- 创建阶段：函数声明存储在环境中 ｜ 而变量会被设置为 `undefined`（在`var`的情况下） ｜ 保持未初始化（在`let / const`的情况下）
-- 所以： 可以在声明之前访问 var 定义的变量（尽管是 `undefined` ） ｜ 但如果在声明之前访问 `let / const` 定义的变量就会提示引用错误 ｜ `TDZ，暂时性死区`
----
 ## JavaScript 和 TypeScript
 `TS 是 JS 的超集`：TS在JS的基础上加入了静态类型系统+其他高级特性：
 - 静态类型检查
@@ -329,9 +276,46 @@ TS的泛型：
       });
     ```
 ---
+## Array.from()
+把`“可迭代对象”`或`“类数组对象”`转换成真正的数组，并且在“转换的同时”支持映射（像 `map` 那样）
+- 把类数组对象转换为真数组
+  ```js
+    // DOM NodeList / HTMLCollection
+    const divs = Array.from(document.querySelectorAll('div'));
+    
+    // arguments
+    function f() { return Array.from(arguments); }
+    f(1,2,3); // [1,2,3]
+    
+    // 手写类数组
+    const likeArr = {0:'a', 1:'b', length:2};
+    Array.from(likeArr); // ['a','b']
+    
+    // Set / Map
+    Array.from(new Set([1,2,2,3])); // [1,2,3]
+    Array.from(new Map([['a',1],['b',2]])); // [['a',1], ['b',2]]
+  ```
+- 生成序列（range）+ 映射
+  ```js
+    // 0...9 
+    const range = Array.from({ length: 10 }, (_, i) => i); // 每个位置的值取索引 i
+
+    // 生成 1...5 的平方 
+    const squares = Array.from({ length: 5 }, (_, i) => (i+1) ** 2); // [1,4,9,16,25]
+  ```
+- 浅拷贝 & 类型转换
+  ```js
+    const arr = [1, {x:2}];
+    const copy = Array.from(arr); // 浅拷贝 同一个对象引用
+    copy[1].x = 99;
+    arr[1].x; // 99
+
+    Array.from('hello'); // ['h','e','l','l','o']
+  ```
+---
 ## var / const / let
 `var：` 
-- 作用域（Scope）: 函数级 整个函数内有效 若在外 则是全局作用域
+- 作用域（Scope）: 【函数级】 整个函数内有效 若在外 则是全局作用域
 - 变量提升（Hoisting）: 被提升到函数/全局的顶部
 - 允许重复声明
 - 在全局作用域用`var`声明的变量会成为`window对象`的属性（浏览器环境）
@@ -340,7 +324,7 @@ TS的泛型：
       console.log(window.globalVar); // "hello"
     ```
 `let：` `ES6 块级作用域变量`
-- 作用域（Scope）: 块级 只在 {}（如 if、for、while 等）内有效
+- 作用域（Scope）: 【块级】 只在 {}（如 if、for、while 等）内有效
 - 变量提升（Hoisting）: 也会提升 但进入“暂时性死区”（TDZ） 在声明前访问会报错
   - TDZ 是指从作用域开始到变量声明语句执行之前的区域，在这期间访问变量会抛出 ReferenceError
   - 引擎知道变量的存在（已提升），只是不允许访问
@@ -348,22 +332,94 @@ TS的泛型：
 - 在全局作用域`用let声明的变量`不会成为`window对象`的属性
 
 `const：` `ES6 块级作用域常量`
-- 作用域（Scope）: 块级 同`let`
+- 作用域（Scope）: 【块级】 同`let`
 - 变量提升（Hoisting）: 进入“暂时性死区” 同`let`
 - 不允许重复声明 同`let`
 - 不可变性（Immutability）: const声明的变量必须初始化，且不能重新赋值 `（但对象/数组的内容可修改）`
 - 在全局作用域`用const声明的变量`不会成为 window 对象的属性 同`let`
 ---
+## JavaScript 中的执行上下文和执行栈
+1. `执行上下文`是当前`JavaScript`代码被解析和执行`所在环境`的抽象概念 | 执行上下文共三种类型：
+   - **全局执行上下文**： 浏览器中的对象是`window对象 (或self/frames)` `this`指向这个全局对象
+     - this指向：浏览器里默认是 `window` ｜ node里`全局`和`顶层`不一样
+   - **函数执行上下文**：有无数个 函数被调用的时候创建 每次调用函数都会创建一个新的上下文
+   - **Eval函数执行上下文**： 运行在eval函数中的代码 很少 也不建议使用
+2. `执行栈（调用栈）` 具有`LIFO（先进后出）`结构 用于储存在代码执行期间创建的所有执行上下文：
+   - **首次运行**：创建一个`全局执行上下文` push 到当前`执行栈`
+   - **发生函数调用时**：引擎为当前函数创建 `新的函数执行上下文` push到`执行栈顶` 
+   - **函数运行完成后**： 对应的函数执行上下文从栈顶pop出 上下文控制权移交到当前执行栈的`下一个执行上下文`
+3. 执行上下文创建与执行：
+   - **创建阶段**： 
+     1. 确定`this`的值（ `This Binding` ）
+     2. `LexicalEnvironment（词法环境）组件` 被创建 `VariableEnvironment（变量环境）组件` 被创建
+     3. 建立作用域链 `Scope Chain`
+     4. 额外步骤：创建`arguments`对象，检查当前上下文中的参数，建立该对象的属性与属性值【仅在函数环境(非箭头函数)中进行，全局环境没有此过程】
+   - **全局执行上下文中**： `this = globalThis`（浏览器是 window，Node 里是 module.exports 或 undefined） 
+   - **函数执行上下文中**： `this`指向取决于`函数调用方式` 默认绑定｜隐式绑定｜显式绑定（硬绑定）｜new绑定｜箭头函数 ……
+---
+## 词法环境 和 变量环境
+- `词法环境 LE` 和 `变量环境 VE` 并列
+  - `LexicalEnvironment（词法环境 LE）` ：
+    - `let / const / class` 声明
+    - `函数声明`（函数声明提升在 LE 里，且优先级高于 var）
+    - 对外层环境的引用（形成作用域链）
+    - ( arguments 对象是什么 ) : 只在`非箭头函数`里可用的、`类数组的对象`，装着实参列表: (有length 按下标可取值 但不是数组 没有原生数组方法)
+      ```js
+        function f(a, b) {
+          console.log(arguments.length); // 实参个数
+          console.log(arguments[0], arguments[1]);
+        }
+        f(1, 2, 3);// 3 \n 1 2
+      ```
+  - `VariableEnvironment（变量环境 VE）` ：
+    - `var` 声明的绑定（初始化为 undefined）
+- 所以在函数声明与 var 冲突时，函数声明优先 : 
+  ```js
+    console.log(a); // [Function: a]
+    var a = 1;
+    function a() {}
+    ```
+- 函数声明 vs 函数表达式:
+  ```js
+    // 函数声明提升：整体提升，可以在声明前调用。
+    // 函数表达式：只有变量声明提升，函数不会提升。
+    foo(); // declaration
+    function foo() { console.log("declaration"); }
+
+    bar(); // TypeError: bar is not a function
+    var bar = function() { console.log("expression"); };
+  ```
+- （为什么分两套）ES6 以后增加了 `let/const` 的块级作用域和 `TDZ` 语义，需要与 `var` 分开管理，避免老语义相互干扰
+---
+## 变量提升的原因 | 从词法环境和变量环境来看 
+- `变量提升（Hoisting）`本质：`执行上下文（Execution Context）`在创建阶段就把作用域内的变量和函数“登记”到了`环境记录（Environment Record (ER)）` `（包括：LexicalEnvironment / VariableEnvironment）`里
+- **创建阶段**：`let`、`const` 和`函数声明`存储在`词法环境 LE`中（也可包含块级作用域的绑定） ｜ `var 声明`的绑定存储在`变量环境 VE`
+- **此时发生提升**：
+  - `函数声明 (Function Declaration) `｜整个函数（名字 + 函数体）都会被放入环境中 所以函数可以在声明之前调用
+  - `var 声明` ｜ 名字会提前登记到 `Variable Environment` 初始值为 `undefined` ｜ 声明前访问会得到 undefined
+  - `let / const 声明` ｜ 名字会被放入 `Lexical Environment` 但保持 `未初始化 (uninitialized)` 状态 在声明前访问会抛出 ReferenceError —— 这就是 `TDZ（暂时性死区）`
+- **编译阶段**：
+  - 解析器在读取代码时就会“提前扫描”声明
+  - 将函数声明和变量声明注册到对应环境（`Lexical Environment` / `Variable Environment`）里
+  - 因此即使写在后面 声明也会在执行前就“登记”好
+- **执行阶段**：
+  - 代码自上而下执行
+  - 遇到赋值语句时 才会真正给变量赋值
+  - 函数声明早就已经准备好了 所以可以直接调用
+- [变量提升范例](./5JavaScript&TypeScript/Hoisting.js)
+---
 ## 作用域链 vs 原型链
 `作用域链（Scope Chain）` :
 - 用来`变量查找` | 解决“变量在哪儿”
-- JS引擎在执行代码时 如果在当前`词法环境 LE`找不到某个变量 就会沿着外层环境一直往上查 直到全局环境
+- JS引擎在执行代码时 如果在当前`词法环境 LE` `变量环境 VE`找不到某个变量 就会沿着外层环境一直往上查 直到全局环境
 
 `原型链` :
 - 用来属性/方法查找| 解决“对象属性在哪儿”
 - 对象访问某个属性时 现在自己身上找 找不到就去它的 `[[Prototype]]`(也就是 `__proto__`) 查找 层层查找直到 `Object.prototype`
 ---
-## Function 与 Object
+## 原型与原型链
+`JavaScript`有着七种基本类型`String`、`Number`、`Boolean`、`Null`、`Undefined`、`Symbol`、`Object`，前六种为基本数据类型，`Object`为引用类型。`函数`本质上是`Object类型`，也就是一个`对象`
+>⚠️ `typeof (null)`会返回`Object` | 这是因为JS二进制前三位都为0的话会被判断为Object类型，null的二进制表示是全0，自然前三位也是0，所以执行typeof时会返回Object，实际null为基本数据类型
 `Object`是所有对象的基类；所有函数是`Function`对象的实例
 - **Object**
   - `Object`是所有函数的最终基类
@@ -392,4 +448,121 @@ TS的泛型：
   - `__proto__`是对象所具有的内部属性 指向该对象的原型（构造函数的`prototype`）
   - 现代浏览器通常可直接访问 规范中叫`[[Prototype]]`
 - [一些原型链范例](./5JavaScript&TypeScript/Object.js)
+---
+## Js中的位操作符
+- JavaScript的数字类型为`双精度 IEEE 754 64位浮点类型`
+- 按位操作符的操作数都会被转成`补码形式的有符号32位整数` 用比特序列(0和1组成)表示 超过32位的数字会被丢弃
+- 第一个操作数的每个比特位与第二个操作数的相应比特位匹配（第一位对应第一位，第二位对应第二位，以此类推）
+- 位运算符应用到每对比特位，结果是新的比特值
+- 运算结果再转化为`Js数字类型`
+- **& ：按位与(AND)**
+  - 对于每一个比特位，只有两个操作数相应的比特位都是1时，结果才为1，否则为0
+  - 判断数值的奇偶性
+    ```js
+      console.log(7 & 1);    // 1
+      console.log(8 & 1) ;   // 0
+    ```
+- **| ：按位或(OR)**
+  - 对于每一个比特位，当两个操作数相应的比特位至少有一个1时，结果为1，否则为0
+  - 将值强制转换为`int 32`即`32位整数类型`
+    ```js
+      console.log(11.11 | 0);      // 11
+      console.log("11.11" | 0);    // 11
+      console.log("-11.11" | 0);   // -11
+      console.log(1.23E2 | 0);     // 123
+      console.log([] | 0);         // 0
+      console.log(({}) | 0);       // 0
+    ```
+- **^ ：按位异或(XOR)**
+  - 对于每一个比特位，当两个操作数相应的比特位有且只有一个1时，结果为1，否则为0
+  - 交换数值
+    ```js
+      let a = 7; // 0111
+      let b = 1; // 0001
+      //将 a 和 b 的信息混合到 a 中
+      a ^= b; // a = a^b = 0110
+      //使用新的 a（混合了 a 和 b 的信息）^b提取出原始的 a，并将其存储到 b
+      b ^= a; // b = b^a = 0111
+      //使用新的 a（混合了 a 和 b 的信息）^新b(a)提取出原始的 b，并将其存储到 a
+      a ^= b; // a = a^b = 0001
+      console.log(a);   // 1
+      console.log(b);   // 7
+
+      // 也可以借助数组交换
+      b = [a, a = b][0];
+      // 解构赋值更简单
+      [a, b] = [b, a];
+    ```
+  - 判断值的符号是否相同
+    ```js
+      let a = 1;
+      let b = 1;
+      console.log((a ^ b) >= 0);   // true
+      console.log((a ^ -b) >= 0);   // false
+      // ⚠️ 两个数的符号不同（一个正一个负），高位符号位将不同，异或后结果的符号位为 1（负数）
+      // 负数以补码表示
+      // b=1 正数的二进制为 0000 0001
+      // 将正数转为负数的补码：
+      // 先取反：1111 1110
+      // 再加1：1111 1111
+      // −1 的二进制表示为 1111 1111
+    ```
+- **~ ：按位非(NOT)**
+  - 对于每一个比特位，反转操作数的比特位，即0变成1，1变成0
+  - 将值强制转换为`int 32`即`32位整数类型`
+    ```js
+      console.log(~~(11.11));      // 11
+      console.log(~~("11.11"));    // 11
+      console.log(~~("-11.11"));   // -11
+      console.log(~~(1.23E2));     // 123
+      console.log(~~([]));         // 0
+      console.log(~~({}));         // 0
+    ```
+- **<< ：左移**
+  - 将值的二进制形式向左移n (n < 32)比特位，右边用0填充
+  - 进行整数的* 2^n运算
+    ```js
+      console.log(11 << 2);         // 44
+      console.log(11.11 << 1);      // 22
+      console.log("11.11" << 1);    // 22
+    ```
+    - 将值强制转换为`int 32`即`32位整数类型`: `xxxx << 0`
+- **>> ：有符号右移**
+    - 将值的二进制表示向右移n (n < 32)位，丢弃被移出的位
+    - 进行整数的/ 2^n运算： `xxxx >> n`
+    - 将值强制转换为`int 32`即`32位整数类型`： `xxxx >> 0`
+- **>>> ：无符号右移**
+    - 将值的二进制表示向右移n (n< 32)位，丢弃被移出的位，并使用0在左侧填充
+    - 所以结果总是非负的，即便右移0个比特，结果也是非负的（对于>>>一般不用于负数操作）
+    - 进行整数的/ 2^n运算（不用于负数）： `xxxx >>> n`
+    - 将值强制转换为`int 32`即`32位整数类型`（不用于负数）： `xxxx >>> 0`
+---
+## 闭包（Closure）
+- `JavaScript` 中 函数能够“记住”并访问它所在的`词法作用域` 即使函数在其作用域之外执行
+- 简单来说，闭包就是一个函数能够访问它外部函数作用域中的变量
+  - 作用域链：当一个函数被创建时，它会携带一个对其外部作用域的引用。这种引用使得函数即使在外部作用域已经销毁时，仍然能够访问该作用域中的变量。
+  - 变量的生命周期：闭包的核心在于，外部函数的变量不会在外部函数执行完毕后销毁，而是被闭包函数“捕获”并保持存活。
+  - 可能导致内存泄漏（如果不正确使用）。
+- [闭包小例](./5JavaScript&TypeScript/Closure.js)
+- [闭包计数器](./5JavaScript&TypeScript/ClosureCounter.js)
+---
+## this 的指向
+- `JS`中`this`的指向在函数定义的时候是确定不了的，只有函数执行的时候才能确定，this的最终指向的是那个调用它的对象
+- 调用函数才会使`this`指向调用者，但箭头函数除外
+- **浏览器中（window 环境）的 this**
+  - 顶层对象是 window | 可以认为：`this` 👉 顶层 = 全局 = window
+- **Node.js 中的 this**
+  - `Node` 的顶层对象不是 `window`，而是 `global` ｜但 `Node` 对模块化有特殊处理（每个 `.js` 文件都是一个模块 模块外层不是直接暴露到 `global`，而是被包了一层函数）
+  - **`顶层作用域`** | **Node.js 里有两种模块体系** 
+    - `CommonJS 模块（CJS）` Node.js 早期的默认模块系统（`require`、`module.exports`）【`this` 指向 `module.exports`（打印出来通常是 `{}`）】
+    - `ES Module（ESM）`新标准（`import`、`export`），Node 从 v12 开始逐步支持，.mjs 文件默认是 ESM 【默认运行在严格模式下 `this` 指向 `undefined`】
+  - **`全局作用域`** 运行时真正的全局上下文（global 对象） 只有在 REPL（命令行交互模式）里输入代码时 | `this` 👉 `global`
+- [this 的实例](./5JavaScript&TypeScript/this.js)
+---
+## apply、call、bind
+- 【 apply call bind 】 每个Function对象都存在`apply()`、`call()`、`bind()`方法 其作用都是改变运行时的 `this` 绑定 但不改变词法作用域/变量查找（闭包仍按定义处决定）
+- `fn.apply(thisArg, [a, b, c])`：立刻调用，参数数组/类数组一次性给
+- `fn.call(thisArg, a, b, c)`：立刻调用，参数离散列出
+- `fn.bind(thisArg, a)`：不调用，返回新函数；后续调用时等同 `fn.call(thisArg, a, ...laterArgs)` | 若用 `new` 调用绑定函数，thisArg 会被忽略，this 指向新实例
+- [手写 apply、call、bind](./5JavaScript&TypeScript/ApplyCallBind.js)
 ---

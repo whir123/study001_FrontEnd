@@ -76,3 +76,58 @@
 - 通过 `HTTP` 响应头（`Content-Security-Policy`）或 `HTML 元标签（<meta>）`来配置 (`HTTP 响应头`优先于 `<meta> 标签`)
 ---
 ## 对浏览器内核的理解
+`渲染引擎(Render Engine)`和`JS引擎`
+- **渲染引擎**：负责取得网页的内容（html、xml、图像等），整理讯息（例如css），以及计算网页的显示方式，然后输出到显示器或打印机 ｜ 构建 `DOM`、`CSSOM`，再合并为`渲染树（Render Tree）`，最后排版绘制
+- **JS引擎**：专门负责 `解析`、`编译`和`执行` JS，提供运行时环境（包括`垃圾回收`、`内存管理`等） ｜ 
+最开始渲染引擎和 JS 引擎并没有区分的很明确，后来 JS 引擎越来越独立，内核就倾向于只指渲染引擎
+- **渲染引擎**：
+  - IE → Trident
+  - `Chrome` → WebKit（早期） → `Blink`（2013 年起，Google 分支出来）
+  - `Edge` → `Blink`
+  - Firefox → Gecko
+  - Safari → WebKit（Apple 主导）
+  - Opera → 早期 Presto → 后来改用 Blink（2013 年后）
+- **JS引擎**：
+  - IE (IE3 ~ IE8) → JScript（微软自研，和 ECMAScript 有兼容性问题）
+  - IE9 ~ IE11 → Chakra（微软下一代引擎）
+  - `Chrome` → `V8`
+  - Edge (旧版) → Chakra（EdgeHTML 内核 + Chakra JS 引擎）
+  - `Edge` (新版, `Chromium 内核（Blink+V8）`) → `V8`（完全跟 Chrome 一样） 
+  - Firefox → TraceMonkey（早期） → JägerMonkey → IonMonkey（现代）
+  - Safari → JavaScriptCore（也叫 Nitro）
+  - Opera → Carakan（早期） → 后来迁移到 V8（跟 Chrome 保持一致）
+- `Node.js` 只有 `JS引擎 (V8)`，没有“渲染引擎”
+---
+## 渲染引擎渲染过程
+1. 【HTML解析】自上而下 先解析 `HTML` 生成 `DOM Tree (Document Object Model Tree)`
+2. 【CSS解析】解析到 `link / <style>标签` 开始解析 `CSS` 生成 `CSSOM Tree (CSS Object Model Tree)` | 解析 `HTML` 和 解析 `CSS` 是并行的
+3. 【JavaScript解析】解析到 `<script>标签` 开始解析脚本 停止解析文档 ｜ 脚本有可能更改`DOM / CSSOM` 继续解析浪费资源 ｜ 所以一般把`<script>`放在`<body>`后
+4. 【生成渲染树】当`DOM Tree`与`CSSOM Tree`生成后 两者结合进行布局 计算它们的大小位置等布局信息 形成一个能够表示这所有信息的内部表示模型 可称为`渲染树 Render Tree` | 渲染树只包含需要显示的节点（如 `display: none` 的不会进入）
+5. 【布局】根据`渲染树 Render Tree` 计算每个元素的几何信息 得到布局树 确定页面排版
+6. 【绘制】根据布局结果，将每个节点的样式（颜色、阴影、边框、文字等）绘制成位图
+7. 【合成】页面可能会被拆分成多个图层（`layer`） 通过合成器线程（`Compositor Thread`）图层合成（图层合成 GPU加速） → 显示到屏幕
+- **重绘 (Repaint)**
+  - 当元素的外观发生改变 但几何结构不变时
+  - 例如：改变 color / backgroud-color / visibility
+    - 使用 visibility: hidden 替代 display: none
+  - 只更新【绘制】阶段 不触发【布局】 代价比较小
+- **回流 (Reflow / Layout)**
+  - 页面的几何结构发生改变时触发（大小 位置 结构）
+  - 例如：添加/删除DOM节点 / 改变文字内容 / 改变窗口大小
+  - 渲染树重新计算 【布局】+【绘制】 代价大
+  - 回流必引起重绘
+---
+## JS 引擎的执行过程
+- `JavaScript` 是单线程语言 一个浏览器页面只有一个线程在执行js脚本代码
+- 异步执行 通过`事件循环（Event Loop）`实现
+- **JS 引擎执行分为3阶段**：语法分析 ➡️ 预编译阶段 ➡️ 执行阶段
+  - 首先按顺序加载由`<script>标签`分割的`js代码块`
+  - 加载js代码块完毕后，立刻进入以上三个阶段，然后再按顺序查找下一个代码块，再继续执行以上三个阶段
+  - 无论是`外部脚本文件（不异步加载）`还是`内部脚本代码块` 都是一样的原理 并且都在`同一个全局作用域`中
+  - **语法分析**：分析该`js脚本代码块`的语法是否正确，如果出现不正确，则向外抛出一个语法错误（SyntaxError），停止该js代码块的执行，然后继续查找并加载下一个代码块
+  - **预编译阶段**：每进入一个不同的运行环境(`全局环境/函数环境/eval环境`)都会创建一个相应的`执行上下文（Execution Context）` || 每进入一个不同的运行环境都会创建一个相应的`执行上下文`  ||  js引擎会以栈的方式对这些`执行上下文`进行处理，形成`函数调用栈（call stack）`，栈底永远是`全局执行上下文（Global Execution Context）`，栈顶则永远是`当前执行上下文`
+- `JS引擎`的作用比较统一，在浏览器的实现中必须含有`DOM`和`BOM` `JS引擎`负责对`JavaScript`进行解释、编译和执行，以使网页达到一些动态的效果
+- `DOM (Document Object Model)` 文档对象模型 表示网页的内容结构 (节点、元素、文本等)
+- `BOM (Browser Object Model)`浏览器对象模型 提供与浏览器窗口相关的对象和方法 (如 `window`、`navigator`、`location`、`history`、`screen`)
+- `DOM`/`BOM` 提供的对象 是 JS 可以操作的环境的一部分 但它们本身不属于`JS引擎` | 浏览器提供的API `JS引擎`通过这些 API 来操作网页内容或浏览器环境
+---
