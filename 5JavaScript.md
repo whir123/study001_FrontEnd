@@ -1,4 +1,4 @@
-# 📜 JavaScript & TypeScript
+# 📜 JavaScript
 ---
 ## ES6 新特性
 
@@ -178,78 +178,18 @@ Promise
       .then(res => res.json());
     ```
 
-Error cause**
+Error cause
 - `Error` 构造函数支持 `cause` 属性，用于传递错误链
 
     ```js
     throw new Error("数据库连接失败", { cause: originalError });
     ```
 
-Object.hasOwn**
+Object.hasOwn
 - 更简洁的自有属性判断（替代 `Object.prototype.hasOwnProperty`）
     ```js
       Object.hasOwn(obj, "prop");
     ```
----
-## JavaScript 和 TypeScript
-`TS 是 JS 的超集`：TS在JS的基础上加入了静态类型系统+其他高级特性：
-- 静态类型检查
-- 类、接口、泛型等面向对象特性
-- ES6+ 特性支持
-- 更好的工具支持（代码补全、重构等）
-
-TS的接口：
-```ts
-  // TS 中的正式接口
-  interface Person {
-    name: string;
-    age: number;
-    greet(): void;
-  }
-```
-
-JS没有抽象类：
-```ts
-  abstract class Animal {
-    abstract makeSound(): void;
-    move(): void {
-      console.log("Moving...");
-    }
-  }
-
-  class Dog extends Animal {
-    makeSound(): void {
-      console.log("Bark!");
-    }
-  }
-```
-
-TS的泛型：
-```ts
-  function identity<T>(arg: T): T {
-    return arg;
-  }
-```
-
-`T`是一个类型变量（Type Variable） 它会在函数调用时被具体类型替换 它保持类型一致性 不是任意类型
-- `T` 保持类型约束、能推断出入参和返回值的关联
-- `any` 完全放弃类型检查、失去所有类型信息
----
-## 弱类型 & 强类型语言 / 动态类型 & 静态类型语言
-- `弱类型语言`：变量的类型可以在运行时可以自动转换 允许隐式类型转换 操作不同类型的数据时 语言自动尝试转换
-- `强类型语言`：不允许隐式类型转换 操作不同类型的数据需显式转换
-- `动态类型语言`：类型在运行时才确定 变量类型可随时改变
-- `静态类型语言`：类型在编译时确定 变量类型不可改变
-
-`Python`：强类型+动态类型
-```python
-  x = 10      # x 是整数（动态类型允许赋值）
-  x = "hello" # x 变为字符串（动态类型的特性）
-  # 但 x + 10 会报错（强类型的特性）
-```
-`JS`：弱类型+动态类型  
-`TS`：强类型+静态类型
-
 ---
 ## WeakMap
 `JavaScript` 中的一种特殊集合类型 它与普通的 Map 类似，但有以下几个关键区别：
@@ -418,7 +358,8 @@ TS的泛型：
 - 对象访问某个属性时 现在自己身上找 找不到就去它的 `[[Prototype]]`(也就是 `__proto__`) 查找 层层查找直到 `Object.prototype`
 ---
 ## 原型与原型链
-- [原型链图解](./5JavaScript&TypeScript/原型链.drawio)
+- [原型链图解-drawio文件](./5JavaScript&TypeScript/原型链.drawio)
+- [原型链图解-png文件](./5JavaScript&TypeScript/原型链.png)
 - `Prototype` 原型/原型对象
   - `函数`的一个属性 `.prototype`
   - `prototype` 是一个对象 | 浏览器开发者页面：`prototype: {constructor: f}` 【默认包含一个 `constructor` 指向该函数本身】
@@ -684,6 +625,25 @@ TS的泛型：
 - [手写防抖](./5JavaScript&TypeScript/Debounce.js)
 - [手写节流](./5JavaScript&TypeScript/Throttle.js)
 ---
-
-浅拷贝只复制对象的第一层属性。如果对象的属性是基础数据类型（如字符串、数字、布尔值等），它会复制这些值；如果属性是引用类型（如对象或数组），它只会复制引用地址，而不会复制引用类型的实际内容。
-深拷贝会递归地复制对象的所有层级，包括嵌套的子对象和数组。深拷贝后的对象与原对象完全独立，修改拷贝后的对象不会影响原对象。
+# 浅拷贝与深拷贝
+1. **浅拷贝**
+- 只复制对象的第一层属性
+- 如果对象的属性是基础数据类型（如字符串、数字、布尔值等），它会复制这些值
+- 如果属性是引用类型（如对象或数组），它只会复制引用地址，而不会复制引用类型的实际内容
+- `Object.assign({}, obj)`、展开运算符`{...obj}`都是典型浅拷贝
+- ⚠️ 不能拷贝：
+  - 函数（只拷贝引用）
+  - `Symbol` 属性（`Object.assign` 能拷贝 | `...` 不能）：
+    ```js
+      let sym = Symbol('foo');
+      let source = { a: 1, [sym]: 2 };
+      let target = {};
+      Object.assign(target, source);
+      console.log(target); // { a: 1 }
+      console.log(target[sym]); // 2 ✅
+    ```
+  - 不可枚举属性
+1. **深拷贝**
+- 深拷贝会递归地复制对象的所有层级，包括嵌套的子对象和数组
+- 深拷贝后的对象与原对象完全独立，修改拷贝后的对象不会影响原对象
+- [手写深浅拷贝](./5JavaScript&TypeScript/Clone.js)
