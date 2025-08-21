@@ -418,38 +418,144 @@ TS的泛型：
 - 对象访问某个属性时 现在自己身上找 找不到就去它的 `[[Prototype]]`(也就是 `__proto__`) 查找 层层查找直到 `Object.prototype`
 ---
 ## 原型与原型链
-`JavaScript`有着七种基本类型`String`、`Number`、`Boolean`、`Null`、`Undefined`、`Symbol`、`Object`，前六种为基本数据类型，`Object`为引用类型。`函数`本质上是`Object类型`，也就是一个`对象`
->⚠️ `typeof (null)`会返回`Object` | 这是因为JS二进制前三位都为0的话会被判断为Object类型，null的二进制表示是全0，自然前三位也是0，所以执行typeof时会返回Object，实际null为基本数据类型
-`Object`是所有对象的基类；所有函数是`Function`对象的实例
-- **Object**
-  - `Object`是所有函数的最终基类
-  - 所有对象（包括函数、数组、日期等）最终继承自 `Object.prototype` （ 继承方法和属性 尽管它们可能会被覆盖 ）
-  - `Object.prototype`是原型链的终点 它的`__proto__`指向`null`
-- **Function**
-  - 所有的构造函数都是 `Function` 的实例; 包括用户自定义函数和内置构造函数（`Object`、`Array`、`Date`等）
-  - `Function` 构造函数本身也是一个函数 自己也是自己的实例
-  - `Function`作为构造函数 本质上是一个对象 因此继承自`Object.prototype`
+- [原型链图解](./5JavaScript&TypeScript/原型链.drawio)
+- `Prototype` 原型/原型对象
+  - `函数`的一个属性 `.prototype`
+  - `prototype` 是一个对象 | 浏览器开发者页面：`prototype: {constructor: f}` 【默认包含一个 `constructor` 指向该函数本身】
+  - 创建函数时 会默认添加 `prototype` 属性 【除了箭头函数和 Function.prototype.bind() 返回的函数】
+- `__proto__` 隐式原型
+  - 对象的属性 | `const obj = new Fn()`
+  - 指向构造函数的 prototype | `obj.__proto__ === Fn.prototype`
+- `Prototype`也是一个对象 所以：`Fn.prototype.__proto__ === Object.prototype`
+- 原型链顶层：`Object.prototype.__proto__ === null`
+- 【补充】 `__proto__` 是非标准历史遗留属性
+  - ES6 开始引入了标准方法 `Object.getPrototypeOf(obj)` 和 `Object.setPrototypeOf(obj, proto)`
+  - 推荐用它们代替 `__proto__`
+- 【补充】`instanceof` 就是依赖这个链条：
+  - `obj instanceof Foo`
+  - 实际检查 `obj.__proto__.__proto__...` 是否能找到 `Foo.prototype`
+- 【补充】
     ```
-      Object.prototype 原型链顶点
-                  ↑
-      Function.prototype 函数的原型
-                  ↑
-      Function 构造函数本身
-                  ↑
-      Object 构造函数 ｜ 也是一个函数
+          Object.prototype 原型链顶点
+                      ↑
+          Function.prototype 函数的原型
+                      ↑
+          Function 构造函数本身
+                      ↑
+      Object( Array Number ...) 构造函数 ｜ 也是一个函数
     ```
     - `Object.__proto__ === Function.prototype` ✅（因为 Object 本身是一个函数，由 Function 构造）
     - `Function.__proto__ === Function.prototype` ✅（因为 Function 也是函数，它自己造自己）
-    - `Function.prototype.__proto__ === Object.prototype` ✅（函数原型最终还是继承自 Object）
+    - `Function.prototype.__proto__ === Object.prototype` ✅（函数原型最终还是继承自 Object.prototype）
     - `Object.prototype.__proto__` === null ✅（顶点）
-- **`.prototype` 和 `__proto__` 的区别**
-  - `prototype`是构造函数特有的属性
-  - `new` 调用构造函数时 创建的新对象的`__proto__`会指向该构造函数的`prototype`
-  - `__proto__`是对象所具有的内部属性 指向该对象的原型（构造函数的`prototype`）
-  - 现代浏览器通常可直接访问 规范中叫`[[Prototype]]`
 - [一些原型链范例](./5JavaScript&TypeScript/Object.js)
 ---
-## Js中的位操作符
+## 判断类型
+1. **`typeof`** 
+   - 返回一个字符串表示变量的数据类型
+   - ✅️ 基本数据类型（除了nul） 
+     - | 基本类型：`number` `string` `boolean` `undefined` `null` `symbol` `bigint`
+   - ❌ 无法区分对象类型及引用类型 
+     - | 对象类型：`Object` 类型及其衍生类型（`Array`、`Function`、`Date`、`RegExp` 等）
+     - | 引用类型：包括所有非基本数据类型的值，即存储在堆内存中的对象
+2. **`instanceof`**
+   - 用于判断某个对象是否是某个构造函数的实例
+   - ✅️只能判断引用类型
+   - ✅️继承关系也会返回true
+   - ❌无法判断基本类型
+   - ❌对象和构造函数来自不同的全局上下文（如不同的 iframe） `instanceof` 判断可能会失败
+3. **`Object.prototype.toString.call`**
+   - `Object.prototype.toString` 是一种更精确的类型判断方式 返回一个标准化的类型字符串
+   - ✅️能够区分所有类型，包括 `null` 和 `undefined`
+   - ✅️对内置对象（如 Array、Date）判断准确
+   - ✅️不受跨 iframe 或跨窗口的影响
+   - ❌对于自定义类 返回值始终是 "[object Object]" 不能区分具体的自定义类型
+4. **`.constructor`**
+   - `.constructor` 是一个引用 指向创建该对象的构造函数
+   - 检查对象的 constructor 属性 可以判断对象是由哪个构造函数创建的
+   - ✅️用于判断引用类型
+   - ❌无法判断基本数据类型
+   - ❌`constructor` 属性可以被修改 导致判断不可靠
+ - [几种判断类型方法举例](./5JavaScript&TypeScript/判断类型.js)
+---
+## new & class
+`new` 是 `JavaScript` 中的一个关键字 用于创建一个对象实例 | `new`可以用来调用一个函数，这个函数通常被称为`“构造函数”`。调用之后，它会创建一个对象实例，并将这个对象与构造函数的原型关联起来
+- 当使用 `new` 关键字调用一个函数时 `JavaScript`会按照以下步骤执行：
+1. 创建一个新对象：
+ - JavaScript 会创建一个空对象`{}`，并将其原型设置为构造函数的 `prototype`。
+ - 这一步相当于：
+  ```javascript
+    const obj = Object.create(ConstructorFunction.prototype);
+  ```
+2. 绑定 `this`：
+ - 构造函数中的 `this` 会被绑定到新创建的对象上
+3. 执行构造函数：
+ - 调用构造函数，将参数传递给它，并执行其中的代码
+4. 返回对象：
+ - 如果构造函数返回了一个对象，则 `new` 表达式返回该对象
+ - 如果构造函数返回的是基本数据类型（如 `string`、`number`），或者没有返回值，则返回新创建的对象
+  ```js
+    //⚠️返回基本数据类型
+    function a() {
+      return 3; // 显式返回一个基础数据类型（数字）
+    };
+    const instance = new a();
+    console.log(instance); // a {}
+    
+    //⚠️Number构造函数
+    const num1 = Number(123); // 基础数据类型
+    const num2 = new Number(123); // 包装对象  
+    console.log(num1); // 123
+    console.log(typeof num1); // "number"
+    console.log(num2); // [Number: 123]
+    console.log(typeof num2); // "object"
+  ```
+  |构造函数|作用|示例|
+  |---|---|---|
+  |Array|创建数组实例|const arr = new Array(1, 2, 3);|
+  |Object|创建对象实例|const obj = new Object();|
+  |Date|创建日期实例|const date = new Date();|
+  |RegExp|创建正则表达式实例|const regex = new RegExp('\\d+');|
+  |Function|创建函数实例|（不推荐使用）|const fn = new Function('x', 'return x * 2');|
+  |Number|创建数字对象|（包装基本类型）|const num = new Number(42);|
+  |String|创建字符串对象|（包装基本类型）|const str = new String('hello');|
+  |Boolean|创建布尔值对象|（包装基本类型）|const bool = new Boolean(true);|
+
+`class` 是 `ES6（ES2015）`引入的一种语法，用来定义类。它提供了一个更清晰、更面向对象的方式来创建对象和继承
+- `class` 示例：
+    ```js
+      class Person {
+        constructor(name, age) {
+            this.name = name;
+            this.age = age;
+        }
+        greet() {
+            console.log(`Hi, I'm ${this.name} and I'm ${this.age} years old.`)
+        }
+      };
+      const person = new Person('Alice', 18);
+      person.greet();
+    ```
+- class 的底层实现实际上是基于构造函数的 可以用一个等价的构造函数来模拟 class 的行为
+    ```js
+      function Person(name, age) {
+        this.name = name;
+        this.age = age;
+      }
+      Person.prototype.greet = function () { // ⚠️
+        console.log(`Hi, I'm ${this.name} and I'm ${this.age} years old.`);
+      };
+      const person = new Person('Alice', 18);
+      person.greet();
+    ```
+- `class` 定义的函数默认必须用 `new` 调用，直接调用会报错
+- `new` 调用 `class` 的过程 【底层的工作流程与普通构造函数调用非常类似】
+  - 创建一个新对象
+  - 将新对象的原型设置为 `class.prototype`
+  - 调用 `constructor` 方法，将 `this` 绑定到新对象
+  - 如果 `constructor` 显式返回一个引用类型（如对象），`new` 表达式返回这个引用类型；否则，返回新创建的对象
+---
+## JS 中的位操作符
 - JavaScript的数字类型为`双精度 IEEE 754 64位浮点类型`
 - 按位操作符的操作数都会被转成`补码形式的有符号32位整数` 用比特序列(0和1组成)表示 超过32位的数字会被丢弃
 - 第一个操作数的每个比特位与第二个操作数的相应比特位匹配（第一位对应第一位，第二位对应第二位，以此类推）
@@ -566,3 +672,18 @@ TS的泛型：
 - `fn.bind(thisArg, a)`：不调用，返回新函数；后续调用时等同 `fn.call(thisArg, a, ...laterArgs)` | 若用 `new` 调用绑定函数，thisArg 会被忽略，this 指向新实例
 - [手写 apply、call、bind](./5JavaScript&TypeScript/ApplyCallBind.js)
 ---
+## 防抖（Debounce）& 节流（Throttle）
+- `Debounce`
+  - 将多次触发的操作合并为一次执行 | 即在事件连续触发时，只有在事件触发结束的一段时间后，才会执行一次回调函数
+  - 如果在等待时间内再次触发事件，则重新计时
+  - 场景：搜索框输入、表单验证、窗口调整大小等
+- `Throttle`
+  - 在一定时间间隔内，只允许函数执行一次，无论期间事件触发了多少次
+  - 即函数的执行频率是固定的
+  - 场景：滚动事件、页面拖拽、按钮点击等
+- [手写防抖](./5JavaScript&TypeScript/Debounce.js)
+- [手写节流](./5JavaScript&TypeScript/Throttle.js)
+---
+
+浅拷贝只复制对象的第一层属性。如果对象的属性是基础数据类型（如字符串、数字、布尔值等），它会复制这些值；如果属性是引用类型（如对象或数组），它只会复制引用地址，而不会复制引用类型的实际内容。
+深拷贝会递归地复制对象的所有层级，包括嵌套的子对象和数组。深拷贝后的对象与原对象完全独立，修改拷贝后的对象不会影响原对象。
