@@ -554,7 +554,7 @@ Object.hasOwn
       // 再加1：1111 1111
       // −1 的二进制表示为 1111 1111
     ```
-- **~ ：按位非(NOT)**
+- **～ ：按位非(NOT)** 
   - 对于每一个比特位，反转操作数的比特位，即0变成1，1变成0
   - 将值强制转换为`int 32`即`32位整数类型`
     ```js
@@ -646,4 +646,6 @@ Object.hasOwn
 1. **深拷贝**
 - 深拷贝会递归地复制对象的所有层级，包括嵌套的子对象和数组
 - 深拷贝后的对象与原对象完全独立，修改拷贝后的对象不会影响原对象
+- [深浅拷贝测试](./5JavaScript&TypeScript/CloneTest.js)
 - [手写深浅拷贝](./5JavaScript&TypeScript/Clone.js)
+- [考虑循环引用+特殊对象的深拷贝](./5JavaScript&TypeScript/CloneDeepPlus.js)

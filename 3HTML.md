@@ -37,7 +37,7 @@
 - 2 内容 SEO
 - 3 外部 SEO
 - 4 用户体验
-1. 现代可访问性标准 `Web Accessibility Standards` : 旨在确保网站对所有用户（包括有视觉、听觉、肢体障碍或认知障碍的用户）都可以轻松访问和使用
+2. 现代可访问性标准 `Web Accessibility Standards` : 旨在确保网站对所有用户（包括有视觉、听觉、肢体障碍或认知障碍的用户）都可以轻松访问和使用
 - 全球最常用的可访问性标准是 `WCAG`（Web Content Accessibility Guidelines），由 W3C 发布。目前的最新版本是 `WCAG 2.1` (2025)
 - 可访问性核心目标：
   - `包容性`： 确保不同能力的用户都能平等地获取信息。
