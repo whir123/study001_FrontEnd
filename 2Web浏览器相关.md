@@ -174,3 +174,12 @@
 - JS引擎本身不实现事件循环机制 是由它的宿主实现 NodeJS中大致和浏览器类似
 - [NodeJS System](./2Web浏览器相关/NodeJsSystem.png)
 ---
+## EventEmitter
+来自 `Node.js` 核心模块 `events` | 是一个通用的“事件发布订阅器”。任何对象都可以继承它，具备“注册事件监听器”和“触发事件”的能力 | 这种思想和 `mitt（事件总线库）`也很像
+- `.on(event, listener)` → 注册监听
+- `.once(event, listener)` → 注册一次性监听
+- `.emit(event, ...args)` → 触发事件
+- `.off(event, listener)` / `.removeListener` → 移除监听器
+- `.removeAllListeners(event)` → 移除某个事件的所有监听器
+- [手写简单的EventEmitter](./2Web浏览器相关/EventEmitter.js)
+---
