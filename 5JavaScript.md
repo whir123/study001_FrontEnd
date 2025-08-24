@@ -346,7 +346,7 @@ Object.hasOwn
   - 代码自上而下执行
   - 遇到赋值语句时 才会真正给变量赋值
   - 函数声明早就已经准备好了 所以可以直接调用
-- [变量提升范例](./5JavaScript&TypeScript/Hoisting.js)
+- [变量提升范例](./5JavaScript/Hoisting.js)
 ---
 ## 作用域链 vs 原型链
 `作用域链（Scope Chain）` :
@@ -358,8 +358,8 @@ Object.hasOwn
 - 对象访问某个属性时 现在自己身上找 找不到就去它的 `[[Prototype]]`(也就是 `__proto__`) 查找 层层查找直到 `Object.prototype`
 ---
 ## 原型与原型链
-- [原型链图解-drawio文件](./5JavaScript&TypeScript/原型链.drawio)
-- [原型链图解-png文件](./5JavaScript&TypeScript/原型链.png)
+- [原型链图解-drawio文件](./5JavaScript/原型链.drawio)
+- [原型链图解-png文件](./5JavaScript/原型链.png)
 - `Prototype` 原型/原型对象
   - `函数`的一个属性 `.prototype`
   - `prototype` 是一个对象 | 浏览器开发者页面：`prototype: {constructor: f}` 【默认包含一个 `constructor` 指向该函数本身】
@@ -389,7 +389,7 @@ Object.hasOwn
     - `Function.__proto__ === Function.prototype` ✅（因为 Function 也是函数，它自己造自己）
     - `Function.prototype.__proto__ === Object.prototype` ✅（函数原型最终还是继承自 Object.prototype）
     - `Object.prototype.__proto__` === null ✅（顶点）
-- [一些原型链范例](./5JavaScript&TypeScript/Object.js)
+- [一些原型链范例](./5JavaScript/Object.js)
 ---
 ## 判断类型
 1. **`typeof`** 
@@ -417,7 +417,7 @@ Object.hasOwn
    - ✅️用于判断引用类型
    - ❌无法判断基本数据类型
    - ❌`constructor` 属性可以被修改 导致判断不可靠
- - [几种判断类型方法举例](./5JavaScript&TypeScript/判断类型.js)
+ - [几种判断类型方法举例](./5JavaScript/判断类型.js)
 ---
 ## new & class
 `new` 是 `JavaScript` 中的一个关键字 用于创建一个对象实例 | `new`可以用来调用一个函数，这个函数通常被称为`“构造函数”`。调用之后，它会创建一个对象实例，并将这个对象与构造函数的原型关联起来
@@ -461,6 +461,7 @@ Object.hasOwn
   |Number|创建数字对象|（包装基本类型）|const num = new Number(42);|
   |String|创建字符串对象|（包装基本类型）|const str = new String('hello');|
   |Boolean|创建布尔值对象|（包装基本类型）|const bool = new Boolean(true);|
+ - [手写 new 函数](./5JavaScript/判断类型.js)
 
 `class` 是 `ES6（ES2015）`引入的一种语法，用来定义类。它提供了一个更清晰、更面向对象的方式来创建对象和继承
 - `class` 示例：
@@ -590,8 +591,8 @@ Object.hasOwn
   - 作用域链：当一个函数被创建时，它会携带一个对其外部作用域的引用。这种引用使得函数即使在外部作用域已经销毁时，仍然能够访问该作用域中的变量。
   - 变量的生命周期：闭包的核心在于，外部函数的变量不会在外部函数执行完毕后销毁，而是被闭包函数“捕获”并保持存活。
   - 可能导致内存泄漏（如果不正确使用）。
-- [闭包小例](./5JavaScript&TypeScript/Closure.js)
-- [闭包计数器](./5JavaScript&TypeScript/ClosureCounter.js)
+- [闭包小例](./5JavaScript/Closure.js)
+- [闭包计数器](./5JavaScript/ClosureCounter.js)
 ---
 ## this 的指向
 - `JS`中`this`的指向在函数定义的时候是确定不了的，只有函数执行的时候才能确定，this的最终指向的是那个调用它的对象
@@ -604,14 +605,14 @@ Object.hasOwn
     - `CommonJS 模块（CJS）` Node.js 早期的默认模块系统（`require`、`module.exports`）【`this` 指向 `module.exports`（打印出来通常是 `{}`）】
     - `ES Module（ESM）`新标准（`import`、`export`），Node 从 v12 开始逐步支持，.mjs 文件默认是 ESM 【默认运行在严格模式下 `this` 指向 `undefined`】
   - **`全局作用域`** 运行时真正的全局上下文（global 对象） 只有在 REPL（命令行交互模式）里输入代码时 | `this` 👉 `global`
-- [this 的实例](./5JavaScript&TypeScript/this.js)
+- [this 的实例](./5JavaScript/this.js)
 ---
 ## apply、call、bind
 - 【 apply call bind 】 每个Function对象都存在`apply()`、`call()`、`bind()`方法 其作用都是改变运行时的 `this` 绑定 但不改变词法作用域/变量查找（闭包仍按定义处决定）
 - `fn.apply(thisArg, [a, b, c])`：立刻调用，参数数组/类数组一次性给
 - `fn.call(thisArg, a, b, c)`：立刻调用，参数离散列出
 - `fn.bind(thisArg, a)`：不调用，返回新函数；后续调用时等同 `fn.call(thisArg, a, ...laterArgs)` | 若用 `new` 调用绑定函数，thisArg 会被忽略，this 指向新实例
-- [手写 apply、call、bind](./5JavaScript&TypeScript/ApplyCallBind.js)
+- [手写 apply、call、bind](./5JavaScript/ApplyCallBind.js)
 ---
 ## 防抖（Debounce）& 节流（Throttle）
 - `Debounce`
@@ -622,10 +623,10 @@ Object.hasOwn
   - 在一定时间间隔内，只允许函数执行一次，无论期间事件触发了多少次
   - 即函数的执行频率是固定的
   - 场景：滚动事件、页面拖拽、按钮点击等
-- [手写防抖](./5JavaScript&TypeScript/Debounce.js)
-- [手写节流](./5JavaScript&TypeScript/Throttle.js)
+- [手写防抖](./5JavaScript/Debounce.js)
+- [手写节流](./5JavaScript/Throttle.js)
 ---
-# 浅拷贝与深拷贝
+## 浅拷贝与深拷贝
 1. **浅拷贝**
 - 只复制对象的第一层属性
 - 如果对象的属性是基础数据类型（如字符串、数字、布尔值等），它会复制这些值
@@ -646,9 +647,9 @@ Object.hasOwn
 2. **深拷贝**
 - 深拷贝会递归地复制对象的所有层级，包括嵌套的子对象和数组
 - 深拷贝后的对象与原对象完全独立，修改拷贝后的对象不会影响原对象
-- [深浅拷贝测试](./5JavaScript&TypeScript/CloneTest.js)
-- [手写深浅拷贝](./5JavaScript&TypeScript/Clone.js)
-- [考虑循环引用+特殊对象的深拷贝](./5JavaScript&TypeScript/CloneDeepPlus.js)
+- [深浅拷贝测试](./5JavaScript/CloneTest.js)
+- [手写深浅拷贝](./5JavaScript/Clone.js)
+- [考虑循环引用+特殊对象的深拷贝](./5JavaScript/CloneDeepPlus.js)
 ---
 ## null & undeined
 - `null`：值“有意为空 / 刻意置空” | 更多是“程序员的明确表达”。
@@ -694,4 +695,206 @@ Object.hasOwn
     [null] == 0     // true   ([null] → '' → 0)
   ```
 ---
-## 类属性控制
+## Object.xxxxx() 
+- `Object.create(指定对象)` 
+  - 创建一个新对象，并把这个对象的原型（`__proto__`）指向你指定的对象 
+    ```js
+      const obj = Object.create(Constructor.prototype);
+      // 结果：→ obj.__proto__ === Constructor.prototype
+    ```
+- `Object.defineProperty(obj, key, descriptor)`
+  - 【类属性控制】任何对象属性都有描述符 (`descriptor`) 
+  - 在对象上精细化定义单个属性 （能控制是否可读写 可枚举 可删除 定义`getter/setter`）
+  - 数据属性和访问器属性不能混用（不能既有 `value` 又有 `get/set`）
+    ```js
+      const user = {};
+      Object.defineProperty(user, "id", {
+        value: 1000,
+        writable: false,    // 不能改
+        enumerable: false,  // 不会出现在 for...in / Object.keys
+        configurable: false,// 不能 delete 或重新配置
+      });
+      console.log(user.id); // 1000
+      console.log(Object.keys(user)); // 看不到 id
+    ```
+  - getter / setter 做“计算属性”
+    ```js
+      const person = {first: "A", last: "B"};
+      Object.defineProperty(person, "fullName", {
+        get() {
+            return `${this.first}-${this.last}`;
+        },
+        set(v) {
+            const [f, ...reset] = v.split(" ");
+            console.log(reset);     // ⚠️ [ 'Dd', 'Cd' ]
+            this.first = f;
+            this.last = reset.join(" ");
+        },
+        enumerable: true
+      });
+      console.log(person.fullName); // A-B
+      person.fullName = "Jack Dd Cd";
+      console.log(person.first);    // Jack
+      console.log(person.last);     // Dd Cd
+    ```
+- `Object.defineProperty(obj, descriptors)`
+  - 一次性定义多个属性 等价于多次 `defineProperty`
+    ```js
+      Object.defineProperties(book, {
+        title: {xxxxx},
+        price: {xxxxx},
+      });
+    ```
+- `Object.prototype.isPrototypeOf(obj)`
+  - `A.isPrototypeof(B)` 询问 A 是不是 B 的原型链上的某一环
+    ```js
+      const A = {};
+      const B = Object.create(A);   //⚠️ B.__proto__ → A
+      const C = Object.create(B);   //⚠️ C.__proto__ → B
+      console.log(A.isPrototypeOf(B));  // true
+      console.log(B.isPrototypeOf(C));  // true
+    ```
+---
+## getter / setter
+JS 里访问器属性（`accessor property`）的语法糖 允许你在访问对象属性时自动执行函数
+- 基本语法：
+    ```js
+      const obj = {
+        _name: "Alice", // ⚠️ 常用写法：用_前缀存放实际数据
+
+        get name () {
+            console.log("getter 触发");
+            return this._name;
+        },
+
+        set name (v) {
+            console.log("setter 触发");
+            if (typeof v !== "string") throw new Error("必须是字符串");
+            this._name = v;
+        },
+      };
+      console.log(obj.name);  // getter 触发 → "Alice"
+      obj.name = "Bob";       // setter 触发 → _name 改成 "Bob"
+    ```
+- 现代 JS 有了 私有字段 `#name`，可以更干净地存储，不必再用 `_`
+  - 只能在 类的内部（包括方法和 getter/setter）访问
+  - 外部无法直接访问，哪怕用 obj["#name"] 也不行
+  - 不会出现在 `Object.keys`、`for...in`、`JSON.stringify` 里
+- 在`class`中的用法：
+    ```js
+      class Person {
+        #age = 0; // ⚠️ 私有字段
+        
+        get age () {
+            return this.#age
+        }
+
+        set age(v) {
+            if (v < 0) throw new Error("年龄不能为负数");
+            this.#age = v;
+        },
+      };
+      const p = new Person();
+      p.age = 18;               // setter 调用
+      console.log(p.age);       // getter 调用 → 18
+      // console.log(p.#age)    // ❌ 外部不能直接访问;
+    ```
+---
+## Proxy对象
+`Proxy` 对象用于创建一个对象的代理 ｜ 它是一个用来拦截对象操作的工具 就像给目标对象（`target`）加了一层“拦截器”，当外部对这个对象做各种操作（取值、赋值、删除、调用……）时，会先经过设置的拦截逻辑（`handler`）
+- `const p = new Proxy(target, handler)`
+- `target` | 要使用 Proxy 包装的目标对象（可以是任何类型的对象，包括`原生数组`，`函数`，甚至`另一个代理`）
+- `handler` | 一个通常以函数作为属性的对象，各属性中的函数分别定义了在执行各种操作时代理 p 的行为
+- `Proxy.revocable(target, handler)` | 创建一个可撤销的代理
+  ```js
+    const { proxy, revoke } = Proxy.revocable({ x: 1 }, {});
+    console.log(proxy.x); // 1
+    revoke(); // 撤销
+    // console.log(proxy.x); // ❌ TypeError
+  ```
+- **`handler` 的常见方法**
+- (1) 对象访问相关
+  - **`get(target, prop, receiver)`**
+    ```js
+      const target = {a:1, b:3};
+      const handler = {
+        get(obj, prop){
+          console.log(`读取属性${prop}`);
+          return obj[prop]; // ⚠️ 必须显式返回值，否则读取到 undefined
+        }
+      };
+      const p = new Proxy(target, handler);
+      console.log(p.a);  // 读取属性a ➡️ 1
+    ```
+  - **`set(target, prop, value, receiver)`**
+    ```js
+      const p = new Proxy({}, {
+        set(target, prop, value){
+          if(typeof value!== "number"){
+            throw new TypeError("只能设置数字！");
+          };
+          target[prop] = value;
+          return true; // ⚠️ 必须返回true 否则报错
+        },
+      })
+      p.age = 20;
+      console.log(p.age); // 20
+    ```
+  - **`has(target, prop)`** | 拦截 `in` 操作符
+    ```js
+      const p = new Proxy({a:10, b:20}, {
+        has(target, prop){
+          return prop === 'a'; // ⚠️ 只承认a属性存在
+        },
+      })
+      console.log('a' in p); // true
+      console.log('b' in p); // false
+    ```
+  - **`deleteProperty(target, prop)`** | 拦截 `delete obj.prop`
+    ```js
+      const p = new Proxy({ a: 1 }, {
+        deleteProperty(target, prop) {
+          console.log(`删除属性: ${prop}`);
+          return true; // ⚠️ 必须返回 true 否则报错
+        }
+      });
+      delete p.a; // 删除属性: a
+    ```
+- (2) 对象结构相关
+  - **`ownKeys(target)`** | 拦截 `Object.keys()`、`for...in`、`Object.getOwnPropertyNames()`
+    ```js
+      const p = new Proxy({ a: 1, b: 2 }, {
+        ownKeys(target) {
+          return ["a"]; // ⚠️ 只返回 a
+        }
+      });
+      console.log(Object.keys(p)); // ["a"]
+      //Object.keys() 返回一个由给定对象自身的可枚举的字符串键属性名组成的数组
+    ```
+- (3) 原型相关
+  - `getPrototypeOf(target)` | 拦截 `Object.getPrototypeOf()`
+  - `setPrototypeOf(target, proto)` | 拦截 `Object.setPrototypeOf()`
+- (4) 函数 构造相关 ｜ 当目标是函数时：
+- [如下两个Proxy方法的例子与参数解释](./5JavaScript/Proxy.js)
+  - `apply(target, thisArg, args)` | 拦截函数调用
+    ```js
+      function sum(a, b) { return a + b; }
+      const p = new Proxy(sum, {
+        apply(target, thisArg, args) {
+          console.log("调用参数:", args);
+          return target(...args) * 2; // ⚠️ 修改返回值
+        }
+      });
+      console.log(p(1, 2)); // 调用参数: [1, 2] → 6
+    ```
+  - `construct(target, args, newTarget)` | 拦截 `new` 操作符
+    ```js
+      class Person { constructor(name) { this.name = name; } }
+      const P = new Proxy(Person, {
+        construct(target, args) {
+          console.log("构造参数:", args);
+          return new target(...args);
+        }
+      });
+      const p = new P("Tom"); // 构造参数: ["Tom"]
+    ```
