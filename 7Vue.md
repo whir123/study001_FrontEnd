@@ -314,3 +314,170 @@ Vue 的组件可以按两种不同的风格书写：`选项式API (Options API)`
     ```
 - `Provide / Inject` **跨层级传递(父传孙等)** 父级 provide 数据；后代组件 inject 直接拿，不需要层层传递
 ---
+## Vue 的生命周期
+- **🔹 选项式AP（Options API）钩子**
+- 写在 `export default { created(){}, mounted(){}, ... }`
+- 【创建阶段】
+  - `beforeCreate` | 实例初始化之后 数据观测和事件配置尚未完成
+  - `created` | 实例初始化之后 数据观测和事件配置已完成 但 DOM 尚未生成【常用于初始化数据（如发起异步请求）】
+    ```vue
+      export default {
+        created(){
+            console.log('created: 实例创建完成');
+            // ⚠️ 可以访问 this.someData（data methods computed等 已经初始化）
+            console.log(this.someData);
+        }
+      }
+    ```
+- 【挂载阶段】
+  - `beforeMount` | 模板编译/渲染之前 组件挂载到 DOM 之前
+  - `mounted` | 模板编译/渲染完成 组件挂载到 DOM 上 【常用于操作 DOM、启动定时器、发起依赖 DOM 的异步请求】
+    ```vue
+      export default {
+        mounted() {
+            console.log('mounted: 组件挂载完成');
+            // ⚠️ 可以操作 DOM
+            console.log(this.$refs.someElement);            
+        }
+      }
+    ```
+- 【更新阶段】
+  - `beforeUpdate` | 数据更新后 DOM更新前 【常用于在 DOM 更新之前执行一些操作】
+  - `updated` | 数据更新后 DOM更新完成（避免在此钩子中修改数据 否则可能引起无限循环）
+- 【销毁阶段】（`Vue3`新增）
+  - `beforeUnmount` | 组件销毁前 【适合在组件销毁前清理副作用（如事件解绑、清除定时器等）】
+  - `unmounted` | 组件销毁后
+  - `Vue2`是 `beforeDestroy` `destroyed`
+    ```vue
+      export default {
+        beforeUnmount() {
+          console.log('beforeUnmount: 组件即将销毁');
+          clearInterval(this.timer);
+        }
+      };
+    ```
+- **🔹⭐️ 组合式API（Composition API）钩子** | setup函数和一系列生命周期钩子
+- 写在 `setup()` 里，使用 `onMounted`、`onUnmounted` ... 这种函数
+- 生命周期钩子是函数调用的方式
+- 【创建阶段】
+  - 不适用，`setup` 执行时组件实例尚未创建，无法访问组件实例
+  - 不适用，`setup` 执行时已经完成了创建阶段
+- 【挂载阶段】
+  - `onBeforeMount` | 组件挂载到 DOM 之前
+  - `onMounted` | 组件挂载到 DOM 之后 【常用于操作 DOM、启动定时器、发起依赖 DOM 的异步请求】
+- 【更新阶段】
+  - `onBeforeUpdate` | 组件更新 DOM 之前 【常用于在 DOM 更新之前执行一些操作和逻辑】
+  - `onUpdated` | 数据更新后 DOM更新完成（避免在此钩子中修改数据 否则可能引起无限循环）
+- 【销毁阶段】（Vue3新增）
+  - `onBeforeUnmount` | 组件销毁前 【适合在组件销毁前清理副作用（如事件解绑、清除定时器等）】
+  - `onUnmounted` | 组件销毁后
+  ```vue
+    <script>
+    import { ref, onMounted, onUpdated, onUnmounted } from 'vue';
+    
+    export default {
+      setup() {
+        const count = ref(0);
+    
+        let timer; // 记得提前定义
+        //【 相当于 mounted 】
+        onMounted(() => {
+          console.log('组件已挂载');
+          //【 设置定时器 】
+          timer = setInterval(() => {
+            count.value++;
+          }, 1000);
+        });
+    
+        //【 相当于 updated 】
+        onUpdated(() => {
+          console.log('组件已更新，当前 count:', count.value);
+        });
+    
+        //【 相当于 beforeUnmount 和 unmounted 】
+        onUnmounted(() => {
+          console.log('组件已销毁');
+          //【 清理副作用 】
+          clearInterval(timer);
+        });
+    
+        return {
+          count,
+        };
+      },
+    };
+    </script>
+  ```
+---
+## Vue 组件 export 出去的是什么？别处如何引入和使用？
+- **① Options API 写法**
+  ```vue
+    <!--【 MyComponent.vue 】-->
+    <template>
+      <div>{{ msg }}</div>
+    </template>
+    
+    <script>
+    export default {
+      name: "MyComponent",
+      data() {
+        return { msg: "Hello Vue" };
+      },
+    };
+    </script>
+  ```
+- 这里的 `export default { ... }`
+- 本质是一个普通的 `JS` 对象，`Vue` 内部会把它变成一个 **“组件构造函数”**
+- 包含了 `name`、`data`、`methods`、`computed`、`生命周期钩子` 等配置
+  ```vue
+    // ⚠️ 引入
+    import MyComponent from './MyComponent.vue';
+
+    export default {
+      components: { MyComponent },  // ⚠️ 注册
+    };
+
+    <template>
+      <div>
+        <MyComponent />
+      </div>
+    </template>
+  ```
+- **② Composition API 写法**
+  ```vue
+    <!--【 Counter.vue 】-->
+    <template>
+      <button @click="count++">count: {{ count }}</button>
+    </template>
+    
+    <script>
+    import { ref } from 'vue';
+    
+    export default {
+      name: "Counter",
+      setup() {
+        const count = ref(0);
+        return { count };
+      }
+    };
+    </script>
+  ```
+- 这里 `export default {}` 依旧是一个对象，只不过其中多了 `setup` 函数，`Vue` 会自动在组件实例创建时调用它
+- `setup` 返回的内容会暴露给模板使用
+`用法和上面一样`
+- ⭐️ ③ **`<script setup>` 写法**（Vue3推荐）
+  ```vue
+    <!--【 HelloWorld.vue 】-->
+    <template>
+      <h1>{{ msg }}</h1>
+    </template>
+    
+    <script setup>
+    import { ref } from 'vue';
+    
+    const msg = ref("Hello World");
+    </script>
+  ```
+- `script setup` 里没有写 `export default`，`Vue` 自动帮你生成并导出一个组件对象
+- 引用方也只需要导入 不需要写 `components: { Child }` 注册
+---
