@@ -1,0 +1,35 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <title>Cesium Demo</title>
+      <!--  https://github.com/CesiumGS/cesium/releases 下载
+            每个 release 页面都有 zip 包（例如 CesiumJS 1.132）
+            下载后解压即可获得完整 Build 目录
+            Build/Cesium/Cesium.js
+            Build/Cesium/Widgets/widgets.css -->
+      <!-- 不能直接双击 HTML 用 file:// 方式打开 -->
+      <!-- 直接右击 HTML → Open with Live Server -->
+      <script src="./Cesium-1.132 03.48.31/Build/Cesium/Cesium.js"></script>
+      <link href="./Cesium-1.132 03.48.31/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+      <style>
+        #cesiumContainer { width: 100%; height: 100vh; margin: 0; padding: 0; }
+      </style>
+    </head>
+    <body>
+      <div id="cesiumContainer"></div>
+      <script>
+        // 初始化 Cesium Viewer
+        // 创建 Cesium Viewer，采用默认地形（新版 Cesium 可自动加载全球地形）
+        const viewer = new Cesium.Viewer('cesiumContainer');
+
+        // ⚠️ 添加一个红色点
+        viewer.entities.add({
+          position: Cesium.Cartesian3.fromDegrees(116.391, 39.907, 100), // 北京
+          point: { pixelSize: 10, color: Cesium.Color.RED }
+        });
+
+        viewer.zoomTo(viewer.entities);
+      </script>
+    </body>
+    </html>

@@ -140,9 +140,8 @@ Promise
           .then(num => num * 2)
           .then(console.log); // 4
 
-        //⚠️ Promise.resolve(value) 
+        // ⚠️ Promise.resolve(value) 
         // 返回一个已解决(fulfilled)状态的Promise 并且value会成为这个Promise的结果
-
         // ⚠️ 无论.then()回调里返回什么 都会被包成一个新的Promise返回
     ```
 - Promise常用API：
@@ -417,7 +416,7 @@ Object.hasOwn
    - ✅️用于判断引用类型
    - ❌无法判断基本数据类型
    - ❌`constructor` 属性可以被修改 导致判断不可靠
- - [几种判断类型方法举例](./5JavaScript/判断类型.js)
+- [几种判断类型方法举例](./5JavaScript/判断类型.js)
 ---
 ## new & class
 `new` 是 `JavaScript` 中的一个关键字 用于创建一个对象实例 | `new`可以用来调用一个函数，这个函数通常被称为`“构造函数”`。调用之后，它会创建一个对象实例，并将这个对象与构造函数的原型关联起来
@@ -898,3 +897,276 @@ JS 里访问器属性（`accessor property`）的语法糖 允许你在访问对
       });
       const p = new P("Tom"); // 构造参数: ["Tom"]
     ```
+---
+## Promise｜async/await｜fetch｜axios
+🔷 `Promise` 是 `ES6` 引入的一种异步编程解决方案，用于处理异步操作的结果 | 它是一个对象，代表一个异步操作最终完成或失败的结果
+- 异步编程的一种解决方案 `ES6`之前 异步任务主要依赖回调函数 嵌套多层的写法产生回调地狱 难以维护 | `Promise` 的出现 就是为了**扁平化异步流程**
+- 【微任务：`.then()` / `.catch()` / `.finally()` 回调会放入 微任务队列 | 优先级高于 `setTimeout` 等宏任务】
+    ```js
+      //【 ES5 】
+      doSomething(function (result) {
+        doSomethingElse(result, function (newResult) {
+          doThirdThing(newResult, function (finalResult) {
+            console.log(finalResult);
+          });
+        });
+      });
+      //【 ES6 】
+      doSomething()
+        .then(doSomethingElse)
+        .then(doThirdThing)
+        .then(console.log)
+        .catch(console.error);
+    ```
+- `Promise`是一个对象 可以获取异步操作的消息
+- 三种状态：`pending` 进行中｜ `fulfilled`已完成｜  `rejected`已失败｜
+- 状态一旦改变就不会再变（不可逆）除了异步操作的结果 其他操作都无法改变这个状态
+- 成功会触发`.then()`| 失败会触发`.catch()`
+- 链式调用：
+    ```js
+        Promise.resolve(1)
+          .then(num => num + 1)
+          .then(num => num * 2)
+          .then(console.log); // 4
+
+        // ⚠️ Promise.resolve(value) 
+        // 返回一个已解决(fulfilled)状态的Promise 并且value会成为这个Promise的结果
+        // ⚠️ 无论.then()回调里返回什么 都会被包成一个新的Promise返回
+    ```
+- Promise常用API：
+    - `Promise.resolve(value)` → 创建已成功的 Promise
+    - `Promise.reject(reason)` → 创建已失败的 Promise
+    - `Promise.all([p1, p2])` → 全部成功才成功，有一个失败就失败
+    - `Promise.allSettled([p1, p2])` → 等全部结束（不管成功失败），返回每个结果状态
+    - `Promise.race([p1, p2])` → 最快的 Promise 决定结果
+    - `Promise.any([p1, p2])` → 任意一个成功就成功（全失败才失败）
+    - **`resolve`和`reject`:** 
+      - `new Promise()` 构造函数里，你自己传入的回调函数会自动收到这两个参数
+      - `resolve(value)` → 把 `Promise` 从 `pending` 状态变成 `fulfilled`（已成功），并把 `value` 传给 `.then()` 的回调
+      - `reject(reason)` → 把 `Promise` 从 `pending` 状态变成 `rejected`（已失败），并把 `reason` 传给 `.catch()` 的回调
+      - 如果 `resolve()` 传入的值是一个 `Promise`，那么当前 `Promise` 会跟随那个 `Promise` 的状态
+
+🔷 `async/await` 是 `ES8 (2017)` 引入的语法糖 用于简化基于 `Promise` 的异步代码 处理异步代码时更接近同步代码的写法 使代码更加直观和易读
+- `async`：用于定义一个`异步函数`，返回一个 Promise。
+- `await`：用于等待一个 `Promise` 的结果，暂停代码执行直到 `Promise` 解决（成功或失败）
+- `await` 后面的东西必须是 `Promise` 或 `类 Promise 对象`（有 `then` 方法），否则会被自动转成 `Promise.resolve(值)`
+  ```js
+    async function fetchData() {
+      try {
+        const response = await fetch("https://xxxxxxxxx/posts");
+        const data = await response.json();
+        console.log(data);
+      } catch (error) {
+        console.error("发生错误：", error);
+      }
+    }
+    fetchData();
+  ```
+
+🔷 `fetch` 是原生的 `JavaScript API` | 用于发起 `HTTP` 请求 | 基于 `Promise`
+- 【优点】：
+  - 原生支持，无需额外安装。
+  - 基于 `Promise`，支持异步操作。
+- 【缺点】：
+  - 不支持请求超时设置（需要手动实现）。
+  - 只有网络错误才会进入 `catch` | `HTTP` 状态码错误 (如果 `HTTP` 状态是 `404` 或 `500`)，`fetch` 并不会 `reject`，而是 `resolve` 一个 `Response` 对象（`ok=false`）
+  ```js
+    //【 必须手动判断 】
+    if (!response.ok) {
+      throw new Error("HTTP 错误：" + response.status);
+    }
+  ```
+  - `fetch` 默认请求会一直等，不会超时 ｜需要配合 `AbortController` 实现
+  - 配置较为繁琐（例如添加拦截器需要手动封装）
+    - `AbortController` 是 `ES2017` 新增的 `Web API`，主要用于控制和取消带有信号的 `DOM 请求`（比如 `fetch`）
+  - `fetch` 拿到的是 `Response` 对象，需要手动 `.json()`
+  ```js
+    //【 定义请求和超时逻辑 】
+    function fetchWithTimeout(url, options = {}, timeout = 5000) {
+      // ⚠️ 创建一个 AbortController 实例，然后通过 .signal 作为 fetch 的配置参数
+      const controller = new AbortController();
+      const timer = setTimeout(() => {
+        controller.abort(); // ⚠️ 超时后自动终止 fetch
+      }, timeout);
+
+      //【 把 controller.signal 传给 fetch 】
+      return fetch(url, {...options, signal: controller.signal})
+        .then(response => {
+          clearTimeout(timer); // 正常响应后清除定时器
+          if (!response.ok) throw new Error('network error');
+          return response.json(); // // fetch 拿到的是 Response，要手动 .json() 或 .text()
+        })
+        .catch(error => {
+          clearTimeout(timer);
+          if (error.name === 'AbortError') { // ⚠️ 超时被 abort() 主动终止的情况
+            throw new Error('请求超时，被终止');
+          }
+          throw error; // 其它异常上抛
+        });
+    } // ❗️ 内部 .then/.catch 负责处理/流转/规范结果
+
+    //【 示例调用 】 // ❗️ 调用方的 .then/.catch 负责最终获取和使用数据
+    fetchWithTimeout('https://jsonplaceholder.typicode.com/posts/1', {}, 2000)
+      .then(data => {
+        console.log('拿到的数据：', data); // 拿到 json 结构
+      })
+      .catch(err => {
+        console.error('请求失败：', err);
+      });
+  ```
+  
+🔷 `axios` 是社区广泛使用的 `HTTP` 客户端库，基于 `XHR（XMLHttpRequest）`，比 `fetch` 更好用
+- [详解](./0用到的库和工具.md#axios)
+---
+## JavaScript 中的事件冒泡
+事件冒泡（`Event Bubbling`）是 `JavaScript` 中一种事件传播机制 | 当某个元素上的事件被触发时，事件会从**事件源（目标元素）**开始，逐级向其祖先元素传播，直到**到达顶层的 `document` 对象**或**被显式阻止** | 这种机制是 `DOM` 事件流的一部分 其分为三个阶段：
+- `从顶层向下捕获` -> `到达目标` -> `从目标向上传递冒泡`
+1. `捕获阶段（Capturing Phase）`｜ 事件从顶层元素（`document`）向事件目标元素传播
+2. `目标阶段（Target Phase）`｜ 事件到达目标元素，触发目标元素上的事件处理程序
+3. `冒泡阶段（Bubbling Phase）`｜ 事件从目标元素逐级向上传播，直到顶层元素（`document`）
+- 可以使用 **`event.stopPropagation()`** 来阻止事件冒泡
+```html
+  <div id="parent" style="padding: 20px; background-color: lightblue;">
+      Parent
+      <div id="child" style="padding: 20px; background-color: lightgreen;">
+          Child
+          <button id="button">Click Me</button>
+      </div>
+  </div>
+
+  <script>
+      document.getElementById("parent").addEventListener("click", () => {
+          console.log("Parent clicked");
+      });
+
+      document.getElementById("child").addEventListener("click", () => {
+          console.log("Child clicked");
+      });
+
+      document.getElementById("button").addEventListener("click", (event) => { 
+          // ⚠️ event记得加 ⬆
+          console.log("Button clicked");
+          event.stopPropagation(); // ⚠️ 阻止事件冒泡
+      });
+  </script>
+  <!-- 当点击 `button` 时，控制台会输出：
+    Button clicked
+    Child clicked
+    Parent clicked -->
+```
+- 事件冒泡的一个重要应用是 **事件代理**
+- 通过将事件绑定到父元素，而不是每个子元素，可以提高性能，尤其是在动态生成子元素的场景中
+  - 减少事件绑定的数量，提升性能
+  - 更方便地处理动态添加的子元素
+  ```html
+    <ul id="list">
+        <li>Item 1</li>
+        <li>Item 2</li>
+        <li>Item 3</li>
+    </ul>
+
+    <script>
+        // ⚠️ 给父元素绑定事件
+        document.getElementById("list").addEventListener("click", (event) => {
+            if (event.target.tagName === "LI") {
+                console.log("Clicked:", event.target.textContent);
+            }
+        });
+    </script>
+    <!-- 点击任意 `li` 元素时，都会输出该 `li` 的内容：
+    Clicked: Item 1 -->
+  ```
+---
+## Generator 函数
+- `Generator` 函数是 ES6 引入的一种特殊类型的函数 ｜ 普通函数在调用后会从头到尾执行，不能中途暂停 ｜ 而它可以在执行过程中暂停和恢复
+- 使用 `Generator` 函数可以实现 **惰性执行**、**迭代控制** 和 **异步编程** 的功能
+- 【 特点 】
+- `Generator` 函数是用 `function*` 定义的【 注意 `*` 】
+- 函数内部使用 `yield` 暂停执行并返回值。
+- 调用 `Generator` 函数不会立即执行，而是返回一个**迭代器对象**
+- 通过迭代器对象的 `.next()` 方法可以逐步执行函数
+```js
+  function* generatorFunction() {
+      yield 1; // ⚠️ 暂停并返回 1
+      yield 2; // ⚠️ 暂停并返回 2
+      yield 3; // ⚠️ 暂停并返回 3
+  }
+
+  //【 ❗️调用 】
+  const gen = generatorFunction(); // 返回一个迭代器对象
+  console.log(gen.next()); // { value: 1, done: false }
+  console.log(gen.next()); // { value: 2, done: false }
+  console.log(gen.next()); // { value: 3, done: false }
+  console.log(gen.next()); // { value: undefined, done: true } // ⚠️ 当所有yield都执行完后，done为true，value为undefined
+ ```
+- Generator 函数的执行流程
+- （1）调用 `Generator` 函数时，返回一个迭代器对象，函数并未执行
+- （2）调用迭代器的 `.next()` 方法时，`Generator` 函数开始执行或从上次暂停的位置继续
+- （3）遇到 `yield` 时，函数暂停，并返回 `yield` 后的值
+- （4）再次调用 `.next()` 时，函数从暂停位置继续执行
+- `Generator` 函数的特性使得它可以实现惰性计算，仅在需要时生成数据
+- 可以使用 `for...of` 循环遍历 `Generator` 函数生成的值。
+```js
+  function* numberGenerator() {
+      yield 1;
+      yield 2;
+      yield 3;
+  }
+  for (const num of numberGenerator()) {
+      console.log(num); // ⚠️ 依次输出 1, 2, 3
+  }
+```
+- 可以通过 `return` 提前终止生成器。
+```js
+  function* generatorWithReturn() {
+      yield 1;
+      yield 2;
+      return 3; // 终止并返回 3
+      yield 4; // 不会执行
+  }
+
+  const gen = generatorWithReturn();
+  console.log(gen.next()); // { value: 1, done: false }
+  console.log(gen.next()); // { value: 2, done: false }
+  console.log(gen.next()); // { value: 3, done: true } ⚠️
+  console.log(gen.next()); // { value: undefined, done: true }
+```
+- 使用 `throw` 抛出异常
+```js
+  function* generatorWithError() {
+      try {
+          yield 1;
+          yield 2;
+      } catch (error) {
+          console.log('Error:', error);
+      }
+  }
+
+  const gen = generatorWithError();
+  console.log(gen.next()); // { value: 1, done: false }
+  console.log(gen.throw('Something went wrong')); // Error: Something went wrong
+  console.log(gen.next()); // { value: undefined, done: true }
+  // ⚠️ generator.throw(error) 会把异常抛到当前的 yield 表达式处 然后触发 catch
+  // ⚠️ 导致控制流直接走进 catch 块，而不会“恢复到下一个 yield”
+```
+- 可以通过 `.next(value)` 向 `Generator` 函数内部传递值
+```js
+  function* generatorWithInput() {
+      const value1 = yield 'First yield';
+      console.log('Received:', value1);
+
+      const value2 = yield 'Second yield';
+      console.log('Received:', value2);
+  }
+
+  const gen = generatorWithInput();
+  console.log(gen.next());
+  console.log(gen.next('Hello'));
+  console.log(gen.next('World'));
+  // { value: 'First yield', done: false }
+  // Received: Hello
+  // { value: 'Second yield', done: false }
+  // Received: World
+  // { value: undefined, done: true }
+```
+---
