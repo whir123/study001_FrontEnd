@@ -1,3 +1,8 @@
+---
+id: 5
+title: JavaScript
+---
+
 # 📜 JavaScript
 ---
 ## ES6 新特性
@@ -78,7 +83,7 @@ Spread / Rest 操作符（展开语法...）
   - 具有一个 `Symbol.iterator` 属性（是一个方法）
   - 调用这个方法会返回一个“迭代器对象”
   - 迭代器对象必须有一个 `next()` 方法
-  - `next()` 方法返回一个对象：{ value: 当前值, done: 是否迭代完成 }
+  - `next()` 方法返回一个对象：`{ value: 当前值, done: 是否迭代完成 }`
   - 迭代器是很多语法糖的基础：
     ```js
       // for...of
@@ -502,14 +507,14 @@ Object.hasOwn
 - 第一个操作数的每个比特位与第二个操作数的相应比特位匹配（第一位对应第一位，第二位对应第二位，以此类推）
 - 位运算符应用到每对比特位，结果是新的比特值
 - 运算结果再转化为`Js数字类型`
-- **& ：按位与(AND)**
+- **`&` ：按位与(AND)**
   - 对于每一个比特位，只有两个操作数相应的比特位都是1时，结果才为1，否则为0
   - 判断数值的奇偶性
     ```js
       console.log(7 & 1);    // 1
       console.log(8 & 1) ;   // 0
     ```
-- **| ：按位或(OR)**
+- **`|` ：按位或(OR)**
   - 对于每一个比特位，当两个操作数相应的比特位至少有一个1时，结果为1，否则为0
   - 将值强制转换为`int 32`即`32位整数类型`
     ```js
@@ -520,7 +525,7 @@ Object.hasOwn
       console.log([] | 0);         // 0
       console.log(({}) | 0);       // 0
     ```
-- **^ ：按位异或(XOR)**
+- **`^` ：按位异或(XOR)**
   - 对于每一个比特位，当两个操作数相应的比特位有且只有一个1时，结果为1，否则为0
   - 交换数值
     ```js
@@ -554,7 +559,7 @@ Object.hasOwn
       // 再加1：1111 1111
       // −1 的二进制表示为 1111 1111
     ```
-- **～ ：按位非(NOT)** 
+- **`～` ：按位非(NOT)** 
   - 对于每一个比特位，反转操作数的比特位，即0变成1，1变成0
   - 将值强制转换为`int 32`即`32位整数类型`
     ```js
@@ -565,7 +570,7 @@ Object.hasOwn
       console.log(~~([]));         // 0
       console.log(~~({}));         // 0
     ```
-- **<< ：左移**
+- **`<<` ：左移**
   - 将值的二进制形式向左移n (n < 32)比特位，右边用0填充
   - 进行整数的* 2^n运算
     ```js
@@ -574,11 +579,11 @@ Object.hasOwn
       console.log("11.11" << 1);    // 22
     ```
     - 将值强制转换为`int 32`即`32位整数类型`: `xxxx << 0`
-- **>> ：有符号右移**
+- **`>>` ：有符号右移**
     - 将值的二进制表示向右移n (n < 32)位，丢弃被移出的位
     - 进行整数的/ 2^n运算： `xxxx >> n`
     - 将值强制转换为`int 32`即`32位整数类型`： `xxxx >> 0`
-- **>>> ：无符号右移**
+- **`>>>` ：无符号右移**
     - 将值的二进制表示向右移n (n< 32)位，丢弃被移出的位，并使用0在左侧填充
     - 所以结果总是非负的，即便右移0个比特，结果也是非负的（对于>>>一般不用于负数操作）
     - 进行整数的/ 2^n运算（不用于负数）： `xxxx >>> n`
@@ -933,6 +938,8 @@ JS 里访问器属性（`accessor property`）的语法糖 允许你在访问对
         // 返回一个已解决(fulfilled)状态的Promise 并且value会成为这个Promise的结果
         // ⚠️ 无论.then()回调里返回什么 都会被包成一个新的Promise返回
     ```
+- `.then(success, error)` 和 `.then(...).catch(...)` 都能捕获错误
+- 推荐 `.catch` 写在链尾，因为它能捕获链中任何一个环节的异常
 - Promise常用API：
     - `Promise.resolve(value)` → 创建已成功的 Promise
     - `Promise.reject(reason)` → 创建已失败的 Promise
@@ -954,7 +961,9 @@ JS 里访问器属性（`accessor property`）的语法糖 允许你在访问对
     async function fetchData() {
       try {
         const response = await fetch("https://xxxxxxxxx/posts");
+        // ⚠️ 如果网络请求失败（断网、DNS 解析失败、请求被阻止等），会直接抛出异常，try语句块立即跳到catch
         const data = await response.json();
+        // ⚠️ 如果fetch请求成功，但返回的数据不是合法的JSON，response.json()会抛出异常，被catch捕获
         console.log(data);
       } catch (error) {
         console.error("发生错误：", error);
@@ -1170,3 +1179,11 @@ JS 里访问器属性（`accessor property`）的语法糖 允许你在访问对
   // { value: undefined, done: true }
 ```
 ---
+## Promise.all
+- `Promise.resolve(value)` | 返回一个立即成功的`Promise`如果`value`已经是`Promise`，会原封不动返回
+- `Promise.reject(reason)` | 返回一个立即失败的`Promise`
+- `Promise.all(iterable)` | 等待所有 `Promise` 完成，返回结果数组；如果有一个失败，就立即返回失败
+- `Promise.allSettled(iterable)` | 等待所有完成（无论成功/失败）返回结果数组：`[{status: "fulfilled", value: xxx}, {status: "rejected", reason: xxx}]`
+- `Promise.race(iterable)` | 谁先完成/失败，就返回那个结果
+- `Promise.any(iterable)` | 谁先成功，就返回那个结果；如果全失败，则返回一个 `AggregateError`
+- [手写Promise.all](./5JavaScript/PromiseAll.js)

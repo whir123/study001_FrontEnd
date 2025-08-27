@@ -1,3 +1,8 @@
+---
+id: 6
+title: TypeScript
+---
+
 # 📨 TypeScript
 ---
 ## JavaScript 和 TypeScript
