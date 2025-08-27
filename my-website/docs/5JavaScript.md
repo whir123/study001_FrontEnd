@@ -350,7 +350,7 @@ Object.hasOwn
   - 代码自上而下执行
   - 遇到赋值语句时 才会真正给变量赋值
   - 函数声明早就已经准备好了 所以可以直接调用
-- [变量提升范例](./5JavaScript/Hoisting.js)
+- [变量提升范例](../static/5JavaScript/Hoisting.js)
 ---
 ## 作用域链 vs 原型链
 `作用域链（Scope Chain）` :
@@ -362,8 +362,8 @@ Object.hasOwn
 - 对象访问某个属性时 现在自己身上找 找不到就去它的 `[[Prototype]]`(也就是 `__proto__`) 查找 层层查找直到 `Object.prototype`
 ---
 ## 原型与原型链
-- [原型链图解-drawio文件](./5JavaScript/原型链.drawio)
-- [原型链图解-png文件](./5JavaScript/原型链.png)
+- [原型链图解-drawio文件](../static/5JavaScript/原型链.drawio)
+- [原型链图解-png文件](../static/5JavaScript/原型链.png)
 - `Prototype` 原型/原型对象
   - `函数`的一个属性 `.prototype`
   - `prototype` 是一个对象 | 浏览器开发者页面：`prototype: {constructor: f}` 【默认包含一个 `constructor` 指向该函数本身】
@@ -393,7 +393,7 @@ Object.hasOwn
     - `Function.__proto__ === Function.prototype` ✅（因为 Function 也是函数，它自己造自己）
     - `Function.prototype.__proto__ === Object.prototype` ✅（函数原型最终还是继承自 Object.prototype）
     - `Object.prototype.__proto__` === null ✅（顶点）
-- [一些原型链范例](./5JavaScript/Object.js)
+- [一些原型链范例](../static/5JavaScript/Object.js)
 ---
 ## 判断类型
 1. **`typeof`** 
@@ -421,7 +421,7 @@ Object.hasOwn
    - ✅️用于判断引用类型
    - ❌无法判断基本数据类型
    - ❌`constructor` 属性可以被修改 导致判断不可靠
-- [几种判断类型方法举例](./5JavaScript/判断类型.js)
+- [几种判断类型方法举例](../static/5JavaScript/判断类型.js)
 ---
 ## new & class
 `new` 是 `JavaScript` 中的一个关键字 用于创建一个对象实例 | `new`可以用来调用一个函数，这个函数通常被称为`“构造函数”`。调用之后，它会创建一个对象实例，并将这个对象与构造函数的原型关联起来
@@ -465,7 +465,7 @@ Object.hasOwn
   |Number|创建数字对象|（包装基本类型）|const num = new Number(42);|
   |String|创建字符串对象|（包装基本类型）|const str = new String('hello');|
   |Boolean|创建布尔值对象|（包装基本类型）|const bool = new Boolean(true);|
- - [手写 new 函数](./5JavaScript/判断类型.js)
+ - [手写 new 函数](../static/5JavaScript/判断类型.js)
 
 `class` 是 `ES6（ES2015）`引入的一种语法，用来定义类。它提供了一个更清晰、更面向对象的方式来创建对象和继承
 - `class` 示例：
@@ -595,8 +595,8 @@ Object.hasOwn
   - 作用域链：当一个函数被创建时，它会携带一个对其外部作用域的引用。这种引用使得函数即使在外部作用域已经销毁时，仍然能够访问该作用域中的变量。
   - 变量的生命周期：闭包的核心在于，外部函数的变量不会在外部函数执行完毕后销毁，而是被闭包函数“捕获”并保持存活。
   - 可能导致内存泄漏（如果不正确使用）。
-- [闭包小例](./5JavaScript/Closure.js)
-- [闭包计数器](./5JavaScript/ClosureCounter.js)
+- [闭包小例](../static/5JavaScript/Closure.js)
+- [闭包计数器](../static/5JavaScript/ClosureCounter.js)
 ---
 ## this 的指向
 - `JS`中`this`的指向在函数定义的时候是确定不了的，只有函数执行的时候才能确定，this的最终指向的是那个调用它的对象
@@ -609,14 +609,14 @@ Object.hasOwn
     - `CommonJS 模块（CJS）` Node.js 早期的默认模块系统（`require`、`module.exports`）【`this` 指向 `module.exports`（打印出来通常是 `{}`）】
     - `ES Module（ESM）`新标准（`import`、`export`），Node 从 v12 开始逐步支持，.mjs 文件默认是 ESM 【默认运行在严格模式下 `this` 指向 `undefined`】
   - **`全局作用域`** 运行时真正的全局上下文（global 对象） 只有在 REPL（命令行交互模式）里输入代码时 | `this` 👉 `global`
-- [this 的实例](./5JavaScript/this.js)
+- [this 的实例](../static/5JavaScript/this.js)
 ---
 ## apply、call、bind
 - 【 apply call bind 】 每个Function对象都存在`apply()`、`call()`、`bind()`方法 其作用都是改变运行时的 `this` 绑定 但不改变词法作用域/变量查找（闭包仍按定义处决定）
 - `fn.apply(thisArg, [a, b, c])`：立刻调用，参数数组/类数组一次性给
 - `fn.call(thisArg, a, b, c)`：立刻调用，参数离散列出
 - `fn.bind(thisArg, a)`：不调用，返回新函数；后续调用时等同 `fn.call(thisArg, a, ...laterArgs)` | 若用 `new` 调用绑定函数，thisArg 会被忽略，this 指向新实例
-- [手写 apply、call、bind](./5JavaScript/ApplyCallBind.js)
+- [手写 apply、call、bind](../static/5JavaScript/ApplyCallBind.js)
 ---
 ## 防抖（Debounce）& 节流（Throttle）
 - `Debounce`
@@ -627,8 +627,8 @@ Object.hasOwn
   - 在一定时间间隔内，只允许函数执行一次，无论期间事件触发了多少次
   - 即函数的执行频率是固定的
   - 场景：滚动事件、页面拖拽、按钮点击等
-- [手写防抖](./5JavaScript/Debounce.js)
-- [手写节流](./5JavaScript/Throttle.js)
+- [手写防抖](../static/5JavaScript/Debounce.js)
+- [手写节流](../static/5JavaScript/Throttle.js)
 ---
 ## 浅拷贝与深拷贝
 1. **浅拷贝**
@@ -651,9 +651,9 @@ Object.hasOwn
 2. **深拷贝**
 - 深拷贝会递归地复制对象的所有层级，包括嵌套的子对象和数组
 - 深拷贝后的对象与原对象完全独立，修改拷贝后的对象不会影响原对象
-- [深浅拷贝测试](./5JavaScript/CloneTest.js)
-- [手写深浅拷贝](./5JavaScript/Clone.js)
-- [考虑循环引用+特殊对象的深拷贝](./5JavaScript/CloneDeepPlus.js)
+- [深浅拷贝测试](../static/5JavaScript/CloneTest.js)
+- [手写深浅拷贝](../static/5JavaScript/Clone.js)
+- [考虑循环引用+特殊对象的深拷贝](../static/5JavaScript/CloneDeepPlus.js)
 ---
 ## null & undeined
 - `null`：值“有意为空 / 刻意置空” | 更多是“程序员的明确表达”。
@@ -879,7 +879,7 @@ JS 里访问器属性（`accessor property`）的语法糖 允许你在访问对
   - `getPrototypeOf(target)` | 拦截 `Object.getPrototypeOf()`
   - `setPrototypeOf(target, proto)` | 拦截 `Object.setPrototypeOf()`
 - (4) 函数 构造相关 ｜ 当目标是函数时：
-- [如下两个Proxy方法的例子与参数解释](./5JavaScript/Proxy.js)
+- [如下两个Proxy方法的例子与参数解释](../static/5JavaScript/Proxy.js)
   - `apply(target, thisArg, args)` | 拦截函数调用
     ```js
       function sum(a, b) { return a + b; }
@@ -1186,4 +1186,4 @@ JS 里访问器属性（`accessor property`）的语法糖 允许你在访问对
 - `Promise.allSettled(iterable)` | 等待所有完成（无论成功/失败）返回结果数组：`[{status: "fulfilled", value: xxx}, {status: "rejected", reason: xxx}]`
 - `Promise.race(iterable)` | 谁先完成/失败，就返回那个结果
 - `Promise.any(iterable)` | 谁先成功，就返回那个结果；如果全失败，则返回一个 `AggregateError`
-- [手写Promise.all](./5JavaScript/PromiseAll.js)
+- [手写Promise.all](../static/5JavaScript/PromiseAll.js)

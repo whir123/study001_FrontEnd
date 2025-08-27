@@ -189,7 +189,7 @@ title: CSS
   - 父元素若只包含浮动子元素，高度会塌陷（因为浮动不在常规流）
   - `clear` 可以让后续元素“避开”浮动的一侧或两侧：`clear:left/right/both`
     - `clear` 属性指定一个元素是否必须移动 (清除浮动后) 到在它之前的浮动元素下面 | `clear` 属性适用于浮动和非浮动元素
-  - [浮动与清除浮动的尝试](./4CSS/float.html)
+  - [浮动与清除浮动的尝试](../static/4CSS/float.html)
 ---
 ## BFC 块级格式化上下文
 `BFC`：`Block Formatting Context` 页面的一个独立布局环境 ｜ 在这个环境里的块级盒子排版不受外部影响，也不会影响外部的块级排版（尤其是与浮动、外边距折叠相关的行为）
@@ -250,8 +250,8 @@ title: CSS
     - flex-basis：初始大小（类似 width/height 的基准值，优先级比 width 高）
   - `align-self`： 定义单个子元素在交叉轴上的对齐方式（覆盖容器的 `align-items` 属性）| 可选值与 align-items 相同
   - `order`：定义子元素的排列顺序 | 默认值为 0，数值越小越靠前
-  - [布局尝试](./4CSS/flex.html)
-  - [圣杯布局](./4CSS/flex-圣杯布局.html)
+  - [布局尝试](../static/4CSS/flex.html)
+  - [圣杯布局](../static/4CSS/flex-圣杯布局.html)
 ---
 ## Grid 布局
 强大的布局方案 尤其适合二维布局 ｜ 行 + 列同时控制 ｜ 把一个容器划分成行和列，子元素（item）可以被精确地放到某个格子里，也可以跨行/跨列
@@ -291,8 +291,8 @@ title: CSS
       <!-- grid-row-end: 3  第3行结束（不包含3）-->
       <!-- grid-column-end: 4  第4列结束 -->
     ```
-- [Grid示例1 网格划分与合并](./4CSS/grid1.html)
-- [Grid示例2 grid-area等](./4CSS/grid2.html)
+- [Grid示例1 网格划分与合并](../static/4CSS/grid1.html)
+- [Grid示例2 grid-area等](../static/4CSS/grid2.html)
 ---
 ## Position 定位
 `position` 属性用于指定一个元素在文档中的**定位方式** ｜ `top`、`right`、`bottom`、`left` 物理属性 + `inset-block-start`、`inset-block-end`、`inset-inline-start`、`inset-inline-end` 流相对逻辑属性则可用于决定定位元素的**最终位置**
@@ -305,8 +305,8 @@ title: CSS
      - 总会创建一个新的层叠上下文 ｜ 在打印的文档中，该元素在每一页上的位置都是相同的（永远固定在视口）
 5. **`sticky`** -- 【是否脱离文档流：否/是（阈值前像 `relative` ｜ 超过阈值时就“吸附”在视口 像 `fixed`）】 ｜ 参照物：最近的可滚动祖先（`overflow 非 visible`） ｜ 最终位置由 `top...` 定位
      - 总是创建一个新的层叠上下文
-  - [relative + absolute 示例](./4CSS/position1.html)
-  - [fixed + sticky 示例](./4CSS/position2.html)
+  - [relative + absolute 示例](../static/4CSS/position1.html)
+  - [fixed + sticky 示例](../static/4CSS/position2.html)
 ---
 ## CSS 响应式设计
 - 响应式设计是现代Web开发的核心概念，它使网站能够适应**不同屏幕尺寸**和**设备类型**
