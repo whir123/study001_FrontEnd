@@ -1,6 +1,6 @@
 ---
 id: 6
-title: TypeScript
+title: 6-TypeScript
 ---
 
 # 📨 TypeScript

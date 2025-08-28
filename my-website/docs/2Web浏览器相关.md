@@ -1,6 +1,6 @@
 ---
 id: 2
-title: Web浏览器相关
+title: 2-Web浏览器相关
 ---
 
 # 🌏 Web浏览器相关
@@ -204,3 +204,88 @@ title: Web浏览器相关
 - `.removeAllListeners(event)` → 移除某个事件的所有监听器
 - [手写简单的EventEmitter](./2Web浏览器相关/EventEmitter.js)
 ---
+## AJAX
+`AJAX`（全称：`Asynchronous JavaScript and XML`，异步`JavaScript`与`XML`），是一种在不重新加载整个网页的情况下，可以与服务器交换数据并更新部分网页内容的网页开发技术 | `Ajax`在`浏览器`是通过`XMLHttpRequest`对象来实现数据传输的
+- AJAX 的工作流程
+  - **事件触发** | 比如，用户点击按钮或页面加载时 js 脚本会触发 AJAX 请求
+  - **创建 `XMLHttpRequest` 对象** | 这是浏览器提供的 API，用于和服务器交换数据
+  - **配置请求参数** | 设置请求方法（`GET`/`POST`/`PUT`/`DELETE`）、目标`URL`、是否异步等
+  - **发送请求** | 通过 `send()` 方法向服务器发送请求，并在此期间页面不会被阻塞
+  - **服务器处理并响应** | 服务器收到请求后，进行逻辑处理，将响应数据返回前端（可以是`JSON`、`XML`、`HTML`、`纯文本`等）
+  - **前端接收并处理响应** | 利用事件监听（如 `readyState`/`onreadystatechange` 或 `onload`），当数据返回时，处理响应并局部更新页面内容
+- 🔷 原生 XMLHttpRequest 示例
+  ```js
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://api.example.com/common/get?name=data&age=data', true); // ⚠️ true 默认｜表示请求是异步
+    xhr.send();   // ⚠️ 把请求发送出去
+    // xhr.open('POST', 'https://api.example.com/common/post', true);
+    // xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); // ⚠️ 请求头
+    // xhr.send('name=data&age=data');   // ⚠️ 说明请求内容 把请求发送出去
+    xhr.onreadystatechange = function() { 
+        if(xhr.readyState === 4 && xhr.status === 200) { // 4 可以写成 XMLHttpRequest.DONE
+            var response = JSON.parse(xhr.responseText);
+            // 局部操作DOM，刷新内容
+            document.getElementById('result').innerText = response.msg;
+        }
+    };
+  ```
+- 🔷 jQuery 简化AJAX
+  ```js
+    $.ajax({
+        url: 'https://api.example.com/data',
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            $('#result').text(data.msg);
+        }
+    });
+  ```
+- ⭐️ 现代 `fetch API` 示例 ｜ 代浏览器内置的`API` 用于替代传统的`XMLHttpRequest` 它基于`Promise` 提供了更简洁的异步操作方式
+  ```js
+    fetch('https://api.example.com/data') // ⚠️ 默认情况下，fetch 的请求方式就是 GET
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('result').innerText = data.msg;
+        });
+    //——————————————————————————————————
+    fetch('https://api.example.com/common/post', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: 'data',
+        age: 20,
+      })
+    }).then(res => {
+      if (res.ok) {
+        return res.json()
+      }
+    })
+  ```
+- ⭐️ `Axios` ｜ 基于`Promise`的第三方`HTTP`客户端库 支持浏览器和`Node.js`环境 对`XMLHttpRequest`进行了封装 提供了更丰富的功能
+  ```js
+    axios.get('https://api.example.com/common/get?name=data&age=data').then(xxxxxxx);
+    //【 ⬇️ async / await 】
+    (async () => {
+      //const res = await axios.get('https://api.example.com/common/get?name=data&age=data');
+      //也能写成：
+      const res = await axios.get('https://api.example.com/common/get', {
+        params: {
+          name: 'data',
+          age: 20,
+        }
+      });
+      console.log(res.data);
+    })()
+  ```
+- 【 优点 】
+  - 无需刷新整个页面，响应更快、更流畅；
+  - 减少带宽消耗：只请求/响应页面部分数据；
+  - 更动态的交互能力：实现异步数据加载，条件查询，实时校验等高级交互。
+- 【 注意事项与常见问题 】
+  - 同源策略与跨域问题 ｜ 默认情况下，`AJAX` 受同源策略限制，需服务器端支持 `CORS（跨域资源共享）`或使用 `JSONP` 进行跨域访问
+  - 现代浏览器皆完美支持 `XMLHttpRequest`/`fetch`，但老浏览器须关注兼容性
+  - 注意异步下顺序，合理处理 `Promise`/`回调`，避免竞态与回调地狱
+  - 安全问题 | 防止`CSRF`/`注入攻击`，验证数据有效性和来源
+- 现代的 `Vue`、`React` 或 `Angular` 等框架通常用 `fetch` 或 `axios` 等库封装 `AJAX` 请求，管理 `API` 与组件状态解耦

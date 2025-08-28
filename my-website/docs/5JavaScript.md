@@ -1,6 +1,6 @@
 ---
 id: 5
-title: JavaScript
+title: 5-JavaScript
 ---
 
 # 📜 JavaScript
@@ -952,6 +952,7 @@ JS 里访问器属性（`accessor property`）的语法糖 允许你在访问对
       - `resolve(value)` → 把 `Promise` 从 `pending` 状态变成 `fulfilled`（已成功），并把 `value` 传给 `.then()` 的回调
       - `reject(reason)` → 把 `Promise` 从 `pending` 状态变成 `rejected`（已失败），并把 `reason` 传给 `.catch()` 的回调
       - 如果 `resolve()` 传入的值是一个 `Promise`，那么当前 `Promise` 会跟随那个 `Promise` 的状态
+- [手写简单的Promise](../static/5JavaScript/Promise.js)
 
 🔷 `async/await` 是 `ES8 (2017)` 引入的语法糖 用于简化基于 `Promise` 的异步代码 处理异步代码时更接近同步代码的写法 使代码更加直观和易读
 - `async`：用于定义一个`异步函数`，返回一个 Promise。
@@ -1026,6 +1027,15 @@ JS 里访问器属性（`accessor property`）的语法糖 允许你在访问对
   
 🔷 `axios` 是社区广泛使用的 `HTTP` 客户端库，基于 `XHR（XMLHttpRequest）`，比 `fetch` 更好用
 - [详解](./0用到的库和工具.md#axios)
+---
+## Promise.all
+- `Promise.resolve(value)` | 返回一个立即成功的`Promise`如果`value`已经是`Promise`，会原封不动返回
+- `Promise.reject(reason)` | 返回一个立即失败的`Promise`
+- `Promise.all(iterable)` | 等待所有 `Promise` 完成，返回结果数组；如果有一个失败，就立即返回失败
+- `Promise.allSettled(iterable)` | 等待所有完成（无论成功/失败）返回结果数组：`[{status: "fulfilled", value: xxx}, {status: "rejected", reason: xxx}]`
+- `Promise.race(iterable)` | 谁先完成/失败，就返回那个结果
+- `Promise.any(iterable)` | 谁先成功，就返回那个结果；如果全失败，则返回一个 `AggregateError`
+- [手写Promise.all](../static/5JavaScript/PromiseAll.js)
 ---
 ## JavaScript 中的事件冒泡
 事件冒泡（`Event Bubbling`）是 `JavaScript` 中一种事件传播机制 | 当某个元素上的事件被触发时，事件会从**事件源（目标元素）**开始，逐级向其祖先元素传播，直到**到达顶层的 `document` 对象**或**被显式阻止** | 这种机制是 `DOM` 事件流的一部分 其分为三个阶段：
@@ -1179,11 +1189,3 @@ JS 里访问器属性（`accessor property`）的语法糖 允许你在访问对
   // { value: undefined, done: true }
 ```
 ---
-## Promise.all
-- `Promise.resolve(value)` | 返回一个立即成功的`Promise`如果`value`已经是`Promise`，会原封不动返回
-- `Promise.reject(reason)` | 返回一个立即失败的`Promise`
-- `Promise.all(iterable)` | 等待所有 `Promise` 完成，返回结果数组；如果有一个失败，就立即返回失败
-- `Promise.allSettled(iterable)` | 等待所有完成（无论成功/失败）返回结果数组：`[{status: "fulfilled", value: xxx}, {status: "rejected", reason: xxx}]`
-- `Promise.race(iterable)` | 谁先完成/失败，就返回那个结果
-- `Promise.any(iterable)` | 谁先成功，就返回那个结果；如果全失败，则返回一个 `AggregateError`
-- [手写Promise.all](../static/5JavaScript/PromiseAll.js)

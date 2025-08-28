@@ -1,6 +1,6 @@
 ---
 id: 7
-title: Vue
+title: 7-Vue
 ---
 
 # 📗 Vue
@@ -136,12 +136,12 @@ Vue 的组件可以按两种不同的风格书写：`选项式API (Options API)`
 ## ref reactive
 - `ref`:
   - 【适用类型】原始类型 也可包对象
-  - 【读写方式】r.value
-  - 【替换/修改】常用于整体修改：{r.value = 新值}
+  - 【读写方式】`r.value`
+  - 【替换/修改】常用于整体修改：`{r.value = 新值}`
 - `reactive`:
   - 【适用类型】仅对象/数组/Map/Set
-  - 【读写方式】直接点/索引点访问：state.foo
-  - 【替换/修改】常用于就地修改：{state.foo = x}
+  - 【读写方式】直接点/索引点访问：`state.foo`
+  - 【替换/修改】常用于就地修改：`{state.foo = x}`
 - **ref处理基本类型例子：**
   ```vue
     <script setup>
@@ -485,4 +485,39 @@ Vue 的组件可以按两种不同的风格书写：`选项式API (Options API)`
   ```
 - `script setup` 里没有写 `export default`，`Vue` 自动帮你生成并导出一个组件对象
 - 引用方也只需要导入 不需要写 `components: { Child }` 注册
+---
+## Vue 的条件渲染和列表渲染
+`v-if` 和 `v-for` ｜ 用于控制 DOM 的渲染和列表的渲染
+- 🔷 `v-if` 是一个条件渲染指令，用于根据表达式的值来决定是否渲染某个 DOM 元素
+  ```html
+    <div v-if="condition">内容</div>
+    // condition是一个布尔值 ｜ 当为true时，渲染该元素 ｜ 为false时，移除该元素
+  ```
+- `v-else`：在 `v-if` 为 `false` 时渲染。
+- `v-else-if`：为 `v-if` 的条件分支。
+  ```html
+    <div id="app">
+      <p v-if="type === 'success'">成功</p>
+      <p v-else-if="type === 'warning'">警告</p>
+      <p v-else>错误</p>
+    </div>
+
+    <script>
+      new Vue({
+        el: '#app',
+        data: {
+          type: 'warning'
+        }
+      });
+    </script>
+    // 如果 type 为 'success'，渲染第一个 <p>
+    // 如果 type 为 'warning'，渲染第二个 <p>
+    // 如果 type 既不是 'success' 也不是 'warning'，渲染第三个 <p>
+  ```
+
+- 🔷 `v-for` 是一个循环渲染指令，用于根据数组或对象渲染列表。
+  ```html
+    <div v-for="item in items">{{ item }}</div>
+    // item in items ｜ items 是一个数组，item 是数组中的每一项
+  ```
 ---

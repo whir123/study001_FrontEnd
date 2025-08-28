@@ -1,6 +1,6 @@
 ---
 id: 4
-title: CSS
+title: 4-CSS
 ---
 
 # 🎨 CSS
@@ -422,3 +422,77 @@ CSS动画主要基于两个关键组件：
 4. `考虑可访问性`：为 prefers-reduced-motion 媒体查询提供替代方案
 5. `保持简洁`：简单自然的动画通常比复杂的效果更好
 ---
+## CSS 居中
+- **纯文本元素 / 内联元素**
+  ```html
+    <div class="parent">
+      <span class="child">居中文本</span>
+    </div>
+
+    <style>
+      .parent { text-align: center; }
+      .child { display: inline-block; /* 可选 */ }
+    </style>
+  ```
+- **块级元素 + 已知宽度**
+  ```css
+    .box {
+      width: 400px;    /* 必须指定宽度（或 max-width） */
+      margin: 0 auto;  /* 水平居中 */
+    }
+  ```
+- **图片水平居中**（常见小技巧）
+  ```css
+    img { display: block; margin: 0 auto; }
+    /* 或者把父元素 text-align:center | 保持 img 为 inline */
+  ```
+- **Flex**
+  ```html
+    <div class="parent">
+      <div class="child">居中内容</div>
+    </div>
+
+    <style>
+    .parent {
+      display: flex;
+      justify-content: center; /* 主轴(水平)居中（默认行方向） */
+      align-items: center;     /* 交叉轴(垂直)居中 */
+      /* 若要把容器填满视窗： min-height: 100vh; */
+    }
+    </style>
+  ```
+- **Grid** | 两轴同时快速居中
+  ```css
+    .parent {
+      display: grid;
+      place-items: center;
+      /* 等同于 align-items:center + justify-items:center */
+      /* ⚠️ justify-items 控制行内（水平） */
+      /* ⚠️ align-items 控制列向（垂直） */
+      /* ⚠️ justify-content / align-content 控制网格整体分布（当网格没有占满容器时） */
+    }
+  ```
+- **绝对定位 + transform** ｜ 不依赖父宽度，跨浏览器稳定
+- 适用于：要在父容器内把一个已知或未知尺寸元素精确居中
+  ```css
+    .parent { 
+      position: relative; 
+      /* ⚠️ 或者父可视为定位上下文 */ 
+    }
+    .child {
+      position: absolute;
+      left: 50%;
+      top: 50%;     /* 👉 把子元素的左上角移动到父容器的中心点 */
+      transform: translate(-50%, -50%);
+      /* 👉 自己向左移动自身宽度的 50%，向上移动自身高度的 50% */
+    }
+    /* ⚠️ 另一个变体（使用 inset 与 margin:auto） */
+    .child {
+      position: absolute;
+      inset: 0;          /* 👉 等价于 top:0; right:0; bottom:0; left:0 */
+      margin: auto;
+      width: 200px;      /* 需要固定宽高时有效 */
+      height: 100px;
+    }
+  ```
+

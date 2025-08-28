@@ -1,6 +1,6 @@
 ---
 id: 8
-title: React
+title: 8-React
 ---
 
 # 📘 React
@@ -222,3 +222,114 @@ title: React
 |组件卸载前 (适合清理副作用)          |`componentWillUnmount`	  |`useEffect(() => { return () => {}; }, [])`|
 |组件重新渲染前，决定是否重新渲染组件   |`shouldComponentUpdate`	|`React.memo` 或 `useMemo`                  |
 |在 props 变化时更新 state          |`getDerivedStateFromProps`	|`useEffect` 或 `useState`                  |
+---
+## React 的条件渲染和列表渲染
+`React` 使用 `JavaScript` 表达式和 `JSX` 语法来实现这些功能
+- 🔷 **条件渲染**是根据某个条件表达式的结果，动态地决定是否渲染某些组件或元素
+- 在 React 中，条件渲染通常通过以下方式实现：
+  - 使用 `if-else` 语句
+  - 使用三元运算符
+  - 使用逻辑与 (`&&`) 运算符
+  - 使用函数返回 JSX
+  ```jsx
+    function Greeting(props) {
+      const isLoggedIn = props.isLoggedIn;
+
+      if (isLoggedIn) {
+        return <h1>Welcome back!</h1>;
+      } else {
+        return <h1>Please sign in.</h1>;
+      }
+    }
+
+    // 使用组件
+    <Greeting isLoggedIn={true} />
+  ```
+
+  ```jsx
+    // ⚠️ 使用三元运算符
+    function Greeting(props) {
+      return (
+        <h1>
+          {props.isLoggedIn ? 'Welcome back!' : 'Please sign in.'}
+        </h1>
+      );
+    }
+
+    // 使用组件
+    <Greeting isLoggedIn={false} />
+  ```
+
+  ```jsx
+    // ⚠️ 使用 && 
+    function Notification(props) {
+      return (
+        <div>
+          {props.hasNewMessages && <p>You have new messages!</p>}
+        </div>
+      );
+    }
+
+    // 使用组件
+    <Notification hasNewMessages={true} />
+  ```
+
+  ```jsx
+    // ⚠️ 使用函数返回 JSX
+    function renderMessage(isLoggedIn) {
+      if (isLoggedIn) {
+        return <h1>Welcome back!</h1>;
+      } else {
+        return <h1>Please sign in.</h1>;
+      }
+    }
+
+    function App() {
+      const isLoggedIn = true;
+      return <div>{renderMessage(isLoggedIn)}</div>;
+    }
+  ```
+- 🔷 **列表渲染**是根据数组中的数据，动态生成一组组件或元素
+- React 使用 `JavaScript` 的 `map()` 方法来实现列表渲染。
+  ```jsx
+    const items = ['Apple', 'Banana', 'Cherry'];
+
+    function ItemList() {
+      return (
+        <ul>
+          {items.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ul>
+      );
+  }
+  // items.map()：遍历数组，为每个元素生成一个 <li>
+  // key属性：React 要求列表中的每个子元素必须有一个唯一的 key，以便高效更新 DOM
+  ```
+- 注意事项
+ - `key` 是 React 用于识别列表中每个元素的唯一标识 | `key` 应该是稳定且唯一的（如 ID）
+ - React 的状态是不可变的，修改数组时应返回一个新的数组
+  ```jsx
+    const [items, setItems] = useState(['Apple', 'Banana']);
+    setItems([...items, 'Cherry']);
+  ```
+ - 如果列表中包含嵌套数据，可以使用递归渲染
+- 条件渲染与列表渲染结合例子：
+  ```jsx
+    const items = [
+      { id: 1, name: 'Apple', visible: true },
+      { id: 2, name: 'Banana', visible: false },
+      { id: 3, name: 'Cherry', visible: true }
+    ];
+
+    function ItemList() {
+      return (
+        <ul>
+          {items.map(item => (
+            item.visible && <li key={item.id}>{item.name}</li>
+          ))}
+        </ul>
+      );
+    }
+  ```
+---
