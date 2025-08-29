@@ -37,7 +37,7 @@ class myPromise{
         try{
             executor(resolve, reject);
         } catch(reason){
-            reject(reason);
+            reject(reason); // ⚠️ 函数本身出错直接reject
         };
     };
 
@@ -67,6 +67,10 @@ class myPromise{
     };
 
     // ⚠️ 3️⃣ 【 实现 .catch 方法 】｜【 catch 就是 then 的语法糖，只关心失败回调 】
+    // ⚠️ 本质上：promise.catch(onRejected) = promise.then(null, onRejected)
+    catch(onRejected){
+        return this.then(null, onRejected);
+    };
 };
 
 //【-------测试-------】
@@ -110,8 +114,15 @@ const p2 = new myPromise(
 ).then(
     val => {
         console.log('then random2:', val);
+    },
+    // val => {
+    //     console.log('then2ERR:', val);
+    // }
+).catch(
+    val => {
+        console.log('Catch:', val);
     }
-);
+)
 /**
  * 情况1:
  * 随机成功: 0.46286659127209395
@@ -120,4 +131,5 @@ const p2 = new myPromise(
  * -------------------------------
  * 情况2:
  * 随机失败: 0.511490265561459
+ * Catch: 0.932745071083833 ❕
  */
