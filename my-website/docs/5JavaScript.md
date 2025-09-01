@@ -1189,3 +1189,65 @@ JS 里访问器属性（`accessor property`）的语法糖 允许你在访问对
   // { value: undefined, done: true }
 ```
 ---
+## 正则表达式
+正则表达式是由一系列字符组成的模式，用来描述、匹配或者操作字符串。可以用来：
+- 检查字符串是否符合某种格式。
+- 提取字符串中的特定部分。
+- 替换字符串中的某些内容
+
+**创建正则表达式：**
+```js
+  //① 正则表达式字面量
+  const regex = /pattern/flags 
+  //pattern：正则表达式的匹配模式
+  //flags：可选，用来修饰正则表达式的标志（如全局匹配、忽略大小写等）
+  const regex = /hello/i // 匹配 "hello"，忽略大小写
+  
+  //② 使用 RegExp 构造函数
+  const regex = new RegExp("pattern", "flags");
+  //这里 pattern 是字符串类型，flags 是修饰符。
+  const regex = new RegExp("hello", "i"); // 同上，匹配 "hello"，忽略大小写
+```
+- **基本语法：**
+  - 元字符：
+    ![元字符](../static/5JavaScript/正则-元字符.png)
+  - 预定义字符：
+    ![预定义字符](../static/5JavaScript/正则-预定义字符.png)
+  - 分组和引用：| 分组用括号 () 表示，分组的内容会被捕获，可以通过 \1、\2 等引用
+  ```js
+    const regex = /(hello)\s\1/; // 匹配 "hello hello"
+    console.log(regex.test("hello hello")); // true
+    console.log(regex.test("hello world")); // false
+  ```
+  - 修饰符：
+    ![修饰符](../static/5JavaScript/正则-修饰符.png)
+  ```js
+    const regex = /hello/gi; // 全局匹配，忽略大小写
+    console.log("Hello hello HELLo".match(regex)); // ["Hello", "hello", "HELLo"]
+  ```
+- **常用方法：**
+  - **`test()`** | 测试字符串是否匹配正则表达式 返回布尔值
+    ```js
+        const regex = /hello/; // 只要字符串里有连续的 hello 即可 
+        // 想限制整串完全等于"hello"，应使用 /^hello$/
+        console.log(regex.test("hello world")); // true
+    ```
+  - **`exec()`** | 用于匹配字符串，返回第一个匹配结果及捕获组 如果没有匹配 返回 null
+    ```js
+        const regex = /(\d+)-(\d+)/;
+        const result = regex.exec("123-456");
+        console.log(result);
+        // 输出：["123-456", "123", "456"]
+    ```
+  - **`replace()`** | 用于替换匹配的子字符串
+    ```js
+        const str = "hello world";
+        const regex = /world/;
+        console.log(str.replace(regex, "JavaScript")); // "hello JavaScript"
+    ```
+  - **`split()`** | 用正则表达式分割字符串
+    ```js
+        const str = "apple,banana,orange";
+        const regex = /,/;
+        console.log(str.split(regex)); // ["apple", "banana", "orange"]
+    ```
