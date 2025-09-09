@@ -112,3 +112,28 @@ title: 3-HTML
   - [记住用户名的登录表单 + Cookie](../static/3HTML/cookie.html)
   - [搜索历史记录 + LocalStorage](../static/3HTML/localStorage.html)
 ---
+## Web Worker
+- 在浏览器里：
+  - JS 是单线程的，默认和 UI 渲染、公用的事件循环在同一个主线程上执行。
+  - 如果某个 JS 运算（比如大循环、复杂计算）执行时间很长，就会阻塞 UI，页面就会「卡死」。
+- 👉 为了避免这种情况，`HTML5` 引入了 `Web Worker`，让你可以开一个**后台线程**来执行任务，**和主线程并行**，不会阻塞 UI。
+  - `Worker` 没有权限访问 `DOM`、`window` 对象。
+  - 但是有 `self`，它指向 `Worker` 的全局作用域。
+  - 主线程和 `Worker` 之间通过消息传递机制（`postMessage` + `onmessage`）进行通信，数据会被拷贝（`Structured Clone`），不是直接共享。
+  - `Worker` 的执行环境很精简：有 `setTimeout`、`fetch`、`XMLHttpRequest` 等，但没有直接操作 `DOM` 的能力。
+- 【补充】`self`
+- **在浏览器环境里**：
+  - self 是一个全局对象的属性。
+  - 它和 window 指向的是同一个对象。
+  - `console.log(self === window); // true`
+- **在 `Web Worker` 环境里**：
+  - Worker 里面没有 window，但有 self，它指向当前 worker 的全局上下文。
+  - 所以在 worker 里常见：
+  ```js
+    self.onmessage = function(e) {
+      console.log('Worker 收到消息：', e.data);
+    };
+  ```
+- **在 `Node.js` 里**（`ES2020` 开始）：
+  - `self` 也存在，和 `globalThis` 指向同一个对象。
+---
